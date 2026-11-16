@@ -27,6 +27,7 @@ export default function PublicLayout() {
     on(); window.addEventListener('scroll', on, { passive: true }); return () => window.removeEventListener('scroll', on);
   }, []);
 
+  const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${school.name}, ${school.address}`)}`;
   const spot = (e) => { const el = e.target.closest?.('.spot'); if (!el) return; const r = el.getBoundingClientRect(); el.style.setProperty('--mx', `${e.clientX - r.left}px`); el.style.setProperty('--my', `${e.clientY - r.top}px`); };
   const socials = [[Facebook, 'Facebook', school.social?.facebook], [Instagram, 'Instagram', school.social?.instagram], [Youtube, 'YouTube', school.social?.youtube]].filter(([, , h]) => h);
   const cls = ({ isActive }) => `underline-grow px-1 py-2 text-sm font-semibold ${isActive ? 'active text-royal-600' : 'text-slate-600 hover:text-navy-800'}`;
@@ -88,7 +89,7 @@ export default function PublicLayout() {
           <div className="lg:col-span-2"><h2 className="font-sans text-sm font-bold uppercase tracking-widest text-white">Explore</h2><ul className="mt-4 space-y-2.5 text-sm">{links.map(([to, l]) => <li key={to}><Link className="foot-link" to={to}>{l}</Link></li>)}<li><Link className="foot-link" to={user ? ROLE_HOME[user.role] : '/login'}>{user ? 'My dashboard' : 'Portal login'}</Link></li></ul></div>
           <div className="lg:col-span-2"><h2 className="font-sans text-sm font-bold uppercase tracking-widest text-white">Classes</h2><ul className="mt-4 space-y-2.5 text-sm">{programmes.map((c) => <li key={c.id}><Link className="foot-link" to={`/classes#${c.id}`}>{c.name}</Link></li>)}</ul></div>
           <div className="lg:col-span-4"><h2 className="font-sans text-sm font-bold uppercase tracking-widest text-white">Visit and contact</h2><ul className="mt-4 space-y-3 text-sm">
-            {school.address && <li className="flex gap-3"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-teal-500" />{school.address}</li>}
+            {school.address && <li className="flex gap-3"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-teal-500" /><a className="foot-link" href={mapsLink} target="_blank" rel="noopener noreferrer" title="Open in Google Maps">{school.address}</a></li>}
             {school.phone && <li className="flex gap-3"><Phone className="mt-0.5 h-4 w-4 shrink-0 text-teal-500" /><a className="foot-link" href={`tel:${school.phone}`}>{school.phone}</a></li>}
             {school.email && <li className="flex gap-3"><Mail className="mt-0.5 h-4 w-4 shrink-0 text-teal-500" /><a className="foot-link" href={`mailto:${school.email}`}>{school.email}</a></li>}
             {school.hours && <li className="flex gap-3"><Clock className="mt-0.5 h-4 w-4 shrink-0 text-teal-500" />{school.hours}</li>}</ul>
@@ -99,7 +100,7 @@ export default function PublicLayout() {
         <div className="pointer-events-none select-none overflow-hidden text-center" aria-hidden="true"><p className="watermark -mb-4 text-[22vw] font-bold sm:text-[16vw]">CARMEL</p></div>
         <div className="relative border-t border-white/10">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-5 pb-24 text-xs md:pb-5">
-            <p>© {new Date().getFullYear()} {school.name}. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Skiez Technologies India Private Limited. All rights reserved.</p>
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="group inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 font-semibold text-white transition hover:bg-teal-500">Back to top <ArrowUp className="h-3.5 w-3.5 transition group-hover:-translate-y-1" /></button>
           </div>
         </div>

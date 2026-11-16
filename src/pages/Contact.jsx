@@ -23,7 +23,7 @@ export default function Contact() {
     if (!v.email && !v.phone) return toast.error('Give an email or a phone number so we can reply');
     try { await api.post('/contact', v); setSent(true); } catch (e) { toast.error(errMsg(e)); }
   };
-  const info = [[MapPin, 'Visit us', school.address], [Phone, 'Call us', school.phone, school.phone && `tel:${school.phone}`], [Mail, 'Email us', school.email, school.email && `mailto:${school.email}`], [Clock, 'Office hours', school.hours]].filter(([, , t]) => t);
+  const info = [[MapPin, 'Visit us', school.address, school.address && `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${school.name}, ${school.address}`)}`], [Phone, 'Call us', school.phone, school.phone && `tel:${school.phone}`], [Mail, 'Email us', school.email, school.email && `mailto:${school.email}`], [Clock, 'Office hours', school.hours]].filter(([, , t]) => t);
   return (
     <>
       <PageHero eyebrow="Get in touch" title="Contact us" text="Questions about admission, classes or a campus visit? Send us a message and the school office will reply." image="blue-day.jpg" />
@@ -55,7 +55,7 @@ export default function Contact() {
         </Reveal>
         <Reveal dir="right" className="space-y-5 md:col-span-2 md:pt-20">
           {info.map(([Icon, t, v, href], n) => (
-            <div key={t} className="spot lift flex gap-4 rounded-2xl bg-white p-5 ring-1 ring-slate-200"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-500/15 text-teal-600"><Icon className="h-5 w-5" /></span><div><h3 className="text-sm font-semibold text-navy-800">{t}</h3>{href ? <a href={href} className="text-slate-600 hover:text-royal-600">{v}</a> : <p className="text-slate-600">{v}</p>}</div></div>))}
+            <div key={t} className="spot lift flex gap-4 rounded-2xl bg-white p-5 ring-1 ring-slate-200"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-500/15 text-teal-600"><Icon className="h-5 w-5" /></span><div><h3 className="text-sm font-semibold text-navy-800">{t}</h3>{href ? <a href={href} {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="text-slate-600 hover:text-royal-600">{v}</a> : <p className="text-slate-600">{v}</p>}</div></div>))}
           {school.mapEmbedUrl && <iframe title="School location" src={school.mapEmbedUrl} loading="lazy" className="h-64 w-full rounded-2xl border-0 shadow-sm" />}
           <div className="rounded-2xl bg-navy-800 p-6 text-white"><h3 className="font-display text-xl font-bold">What happens next</h3>
             <ol className="mt-4 space-y-4">{next.map(([Icon, t, d], n) => <li key={t} className="flex gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-sun-400"><Icon className="h-4 w-4" /></span><div><p className="text-sm font-semibold">{n + 1}. {t}</p><p className="text-sm text-slate-300">{d}</p></div></li>)}</ol></div>
