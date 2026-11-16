@@ -1,23 +1,23 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle2, Shapes, BookOpenText, Pencil, Calculator, GraduationCap } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Shapes, BookOpenText, Pencil, Calculator, GraduationCap, Microscope, Trophy } from 'lucide-react';
 import PageHero from '../components/PageHero';
 import Reveal from '../components/Reveal';
 import Tilt from '../components/Tilt';
 import LazyImg from '../components/LazyImg';
 import { programmes, img, school } from '../config/school';
 
-const icons = [Shapes, BookOpenText, Pencil, Calculator];
-const tones = ['from-sun-500 to-orange-400', 'from-teal-500 to-emerald-400', 'from-royal-500 to-sky-400', 'from-fuchsia-500 to-rose-400'];
+const icons = [Shapes, BookOpenText, Pencil, Calculator, Microscope, Trophy];
+const tones = ['from-sun-500 to-orange-400', 'from-teal-500 to-emerald-400', 'from-royal-500 to-sky-400', 'from-fuchsia-500 to-rose-400', 'from-violet-500 to-indigo-400', 'from-navy-700 to-royal-500'];
 
 export default function Classes() {
   return (
     <>
-      <PageHero eyebrow="Our classes" title="From JKG to Grade III" text={`A clear path for young learners at ${school.name}: a joyful start in Pre-Primary, then growing confidence through the early primary grades.`} image="students-pink-uniform.jpg" />
+      <PageHero eyebrow="Our classes" title="From JKG to Grade V" text={`A clear path for young learners at ${school.name}: a joyful start in Pre-Primary, then growing confidence through the early primary grades.`} image="students-pink-uniform.jpg" />
 
       <section className="mx-auto max-w-6xl px-4 py-16" aria-label="Learning path">
         <Reveal className="text-center"><span className="eyebrow">Learning path</span><h2 className="mt-2 text-3xl text-navy-800 sm:text-4xl">Step by step, year by year</h2></Reveal>
-        <ol className="relative mt-12 grid grid-cols-2 gap-y-10 md:grid-cols-4">
-          <div className="absolute left-[12.5%] right-[12.5%] top-8 hidden h-0.5 bg-slate-200 md:block" aria-hidden="true"><Reveal className="ladder-line h-full bg-gradient-to-r from-teal-500 via-royal-500 to-sun-500" /></div>
+        <ol className="relative mt-12 grid grid-cols-2 gap-y-10 sm:grid-cols-3 md:grid-cols-6">
+          <div className="absolute left-[8.3%] right-[8.3%] top-8 hidden h-0.5 bg-slate-200 md:block" aria-hidden="true"><Reveal className="ladder-line h-full bg-gradient-to-r from-teal-500 via-royal-500 to-sun-500" /></div>
           {programmes.map((c, n) => (
             <Reveal as="li" key={c.id} delay={n * 120} className="relative text-center">
               <a href={`#${c.id}`} className="group block">

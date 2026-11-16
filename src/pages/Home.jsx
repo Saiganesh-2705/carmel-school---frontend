@@ -7,11 +7,11 @@ import Tilt from '../components/Tilt';
 import Counter from '../components/Counter';
 import Carousel from '../components/Carousel';
 import Lightbox from '../components/Lightbox';
+import { SlideLayers, SlideDots, useSlides } from '../components/HeroSlides';
 import { school, img, heroSlides, events, annualDay, community, gallery, programmes } from '../config/school';
 
 function Hero() {
-  const [i, setI] = useState(0);
-  useEffect(() => { const t = setInterval(() => setI((n) => (n + 1) % heroSlides.length), 6500); return () => clearInterval(t); }, []);
+  const [i, setI] = useSlides(0);
   const words = school.motto.split(' ');
   const copy = useRef(null); const glow = useRef(null);
   useEffect(() => {
@@ -21,28 +21,23 @@ function Hero() {
   }, []);
   return (
     <section onPointerMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); const g = glow.current; if (g) { g.style.setProperty('--hx', `${e.clientX - r.left}px`); g.style.setProperty('--hy', `${e.clientY - r.top}px`); g.style.opacity = 1; } }} onPointerLeave={() => { if (glow.current) glow.current.style.opacity = 0; }} className="relative isolate flex min-h-[88vh] items-center overflow-hidden bg-navy-900 text-white">
-      {heroSlides.map((s, n) => (
-        <div key={s.src} className={`absolute inset-0 -z-10 transition-opacity duration-[1400ms] ${n === i ? 'opacity-100' : 'opacity-0'}`} aria-hidden={n !== i}>
-          <img src={img(s.src)} alt={n === i ? s.alt : ''} className={`h-full w-full object-cover ${n === i ? 'animate-kenburns' : ''}`} />
-        </div>))}
+      <SlideLayers i={i} />
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-900/90 via-navy-900/55 to-transparent" />
       <div className="hero-grain absolute inset-0 -z-10" aria-hidden="true" />
       <div ref={glow} className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-500" style={{ background: 'radial-gradient(420px circle at var(--hx,50%) var(--hy,50%), rgba(94,234,212,.18), transparent 70%)' }} aria-hidden="true" />
       {[['12%', '18%', 0], ['78%', '14%', 0.8], ['88%', '48%', 1.6], ['62%', '30%', 2.4], ['30%', '10%', 1.2]].map(([l, t, d], n) => (
         <Star key={n} className="absolute -z-10 h-5 w-5 animate-twinkle fill-sun-400 text-sun-400" style={{ left: l, top: t, animationDelay: `${d}s` }} aria-hidden="true" />))}
       <div ref={copy} className="mx-auto w-full max-w-6xl px-4 pb-24 pt-16 will-change-transform">
-        <p className="animate-wordIn text-sm font-semibold text-teal-500" style={{ animationDelay: '.1s' }}>{school.name} · {school.board}</p>
+        <p className="animate-wordIn text-sm font-semibold text-teal-500" style={{ animationDelay: '0s' }}>{school.name} · {school.board}</p>
         <h1 className="mt-3 text-5xl font-extrabold leading-[1.05] sm:text-7xl lg:text-8xl" aria-label={school.motto}>
-          {words.map((w, n) => <span key={w} className={`mr-4 inline-block animate-wordIn ${n === words.length - 1 ? 'text-gradient-light' : ''}`} style={{ animationDelay: `${0.25 + n * 0.18}s` }}>{w}</span>)}
+          {words.map((w, n) => <span key={w} className={`mr-4 inline-block animate-wordIn ${n === words.length - 1 ? 'text-gradient-light' : ''}`} style={{ animationDelay: `${0.05 + n * 0.07}s` }}>{w}</span>)}
         </h1>
-        <p className="animate-wordIn mt-6 max-w-xl text-lg text-slate-200" style={{ animationDelay: '.8s' }}>A school where children learn through play, music, sport and celebration, with teachers who know every child by name.</p>
-        <div className="animate-wordIn mt-8 flex flex-wrap gap-3" style={{ animationDelay: '1s' }}>
+        <p className="animate-wordIn mt-6 max-w-xl text-lg text-slate-200" style={{ animationDelay: '.25s' }}>A school where children learn through play, music, sport and celebration, with teachers who know every child by name.</p>
+        <div className="animate-wordIn mt-8 flex flex-wrap gap-3" style={{ animationDelay: '.35s' }}>
           <Link to="/contact" className="btn-primary btn-shine px-6 py-3">Enquire about admission</Link>
           <Link to="/events" className="btn bg-white/10 px-6 py-3 text-white backdrop-blur hover:bg-white/20">See our celebrations</Link>
         </div>
-        <div className="mt-10 flex gap-2" role="group" aria-label="Choose slide">
-          {heroSlides.map((s, n) => <button key={s.src} aria-label={`Show slide ${n + 1}`} aria-current={n === i} onClick={() => setI(n)} className={`h-1.5 rounded-full transition-all duration-500 ${n === i ? 'w-10 bg-teal-500' : 'w-4 bg-white/40 hover:bg-white/70'}`} />)}
-        </div>
+        <div className="mt-10"><SlideDots i={i} setI={setI} /></div>
       </div>
       <a href="#celebrate" aria-label="Scroll down" className="absolute bottom-16 left-1/2 hidden -translate-x-1/2 animate-cue text-white/80 sm:block"><ChevronDown className="h-7 w-7" /></a>
       <svg viewBox="0 0 1440 80" preserveAspectRatio="none" className="absolute bottom-0 h-12 w-full fill-white" aria-hidden="true"><path d="M0,40 C240,90 480,0 720,30 C960,60 1200,90 1440,30 L1440,80 L0,80 Z" /></svg>
@@ -109,8 +104,8 @@ function Band() {
 function Programmes() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-16">
-      <Reveal className="flex flex-wrap items-end justify-between gap-4"><div><span className="eyebrow">Our classes</span><h2 className="mt-2 text-3xl text-navy-800 sm:text-4xl">From JKG to Grade III</h2><p className="mt-2 max-w-xl text-slate-600">A joyful start in Pre-Primary and steady growth through the early primary grades.</p></div><Link to="/classes" className="btn-ghost ring-1 ring-slate-200">Explore all classes <ArrowRight className="h-4 w-4" /></Link></Reveal>
-      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <Reveal className="flex flex-wrap items-end justify-between gap-4"><div><span className="eyebrow">Our classes</span><h2 className="mt-2 text-3xl text-navy-800 sm:text-4xl">From JKG to Grade V</h2><p className="mt-2 max-w-xl text-slate-600">A joyful start in Pre-Primary and steady growth through the early primary grades.</p></div><Link to="/classes" className="btn-ghost ring-1 ring-slate-200">Explore all classes <ArrowRight className="h-4 w-4" /></Link></Reveal>
+      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {programmes.map((c, n) => (
           <Reveal key={c.id} delay={n * 100}>
             <Link to={`/classes#${c.id}`} className="spot lift group block h-full rounded-2xl bg-white p-6 ring-1 ring-slate-200">

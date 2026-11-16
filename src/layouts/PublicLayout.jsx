@@ -1,18 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X, MapPin, Phone, Mail, Clock, ArrowUp, Home, GraduationCap, Images, MessageCircle, ArrowRight, Facebook, Instagram, Youtube, Megaphone, LogIn, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, X, MapPin, Phone, Mail, Clock, ArrowUp, Home, GraduationCap, Images, MessageCircle, ArrowRight, Facebook, Instagram, Youtube, LogIn, LogOut, LayoutDashboard } from 'lucide-react';
 import Preloader from '../components/Preloader';
 import { school, img, programmes, gallery } from '../config/school';
 import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
 import { ROLE_HOME } from '../utils/roles';
 
 const links = [['/', 'Home'], ['/about', 'About'], ['/classes', 'Classes'], ['/events', 'Events'], ['/notices', 'Notices'], ['/gallery', 'Gallery'], ['/contact', 'Contact']];
 
 export default function PublicLayout() {
   const [open, setOpen] = useState(false); const { pathname } = useLocation(); const { user, logout } = useAuth();
-  const [latest, setLatest] = useState(null);
-  useEffect(() => { if (school.announcement) return; api.get('/notices/public').then((r) => setLatest(r.data.data[0] || null)).catch(() => {}); }, []);
   const [scrolled, setScrolled] = useState(false); const [progress, setProgress] = useState(0); const [showTop, setShowTop] = useState(false);
 
   const prevPath = useRef(pathname); const [wipe, setWipe] = useState(0);
@@ -41,8 +38,6 @@ export default function PublicLayout() {
           <div className="absolute inset-0 translate-x-full animate-wipe bg-teal-500" style={{ animationDelay: '.12s' }} />
           <div className="absolute inset-0 translate-x-full animate-wipe bg-navy-800" />
         </div>)}
-      {(school.announcement || latest) && (
-        <div className="bg-navy-900 px-4 py-2 text-center text-sm text-white"><span className="inline-flex items-center gap-2"><Megaphone className="h-4 w-4 animate-twinkle text-sun-400" aria-hidden="true" />{school.announcement || <Link to="/notices" className="hover:underline">{latest.title}</Link>}</span></div>)}
       <div className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-teal-500" style={{ transform: `scaleX(${progress})` }} aria-hidden="true" />
       <header className={`sticky top-0 z-40 border-b bg-white/90 backdrop-blur transition-all duration-300 ${scrolled ? 'border-slate-200 shadow-md' : 'border-transparent'}`}>
         <div className={`mx-auto flex max-w-6xl items-center gap-4 px-4 transition-all duration-300 ${scrolled ? 'h-14' : 'h-20'}`}>
