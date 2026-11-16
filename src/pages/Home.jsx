@@ -49,7 +49,7 @@ function Marquee() {
   const strip = [...events, ...events];
   return (
     <section id="celebrate" className="overflow-hidden py-14" aria-label="School celebrations">
-      <Reveal className="mx-auto mb-8 max-w-6xl px-4"><span className="eyebrow">Celebrations</span><h2 className="mt-2 text-3xl font-bold text-navy-800 sm:text-4xl">Every month has something to celebrate</h2><p className="mt-2 max-w-2xl text-slate-600">Colour days, festivals and ceremonies fill the school year. Hover to pause the strip.</p></Reveal>
+      <Reveal dir="blur" className="mx-auto mb-8 max-w-6xl px-4"><span className="eyebrow">Celebrations</span><h2 className="mt-2 text-3xl font-bold text-navy-800 sm:text-4xl">Every month has something to celebrate</h2><p className="mt-2 max-w-2xl text-slate-600">Colour days, festivals and ceremonies fill the school year. Hover to pause the strip.</p></Reveal>
       <div className="flex w-max animate-marquee gap-4 hover:[animation-play-state:paused]">
         {strip.map((e, n) => (
           <Link to="/events" key={n} tabIndex={n >= events.length ? -1 : 0} aria-hidden={n >= events.length} className="group relative block h-64 w-72 shrink-0 overflow-hidden rounded-2xl">
@@ -74,7 +74,7 @@ const tiles = [
 function Bento() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-14">
-      <Reveal><span className="eyebrow">Campus life</span><h2 className="mt-2 text-3xl font-bold text-navy-800 sm:text-4xl">Life at {school.name}</h2><p className="mt-2 max-w-2xl text-slate-600">Learning here goes well beyond the blackboard.</p></Reveal>
+      <Reveal dir="blur"><span className="eyebrow">Campus life</span><h2 className="mt-2 text-3xl font-bold text-navy-800 sm:text-4xl">Life at {school.name}</h2><p className="mt-2 max-w-2xl text-slate-600">Learning here goes well beyond the blackboard.</p></Reveal>
       <div className="mt-8 grid auto-rows-[200px] gap-4 sm:grid-cols-2 md:grid-cols-4">
         {tiles.map((x, n) => (
           <Reveal key={x.t} dir="zoom" delay={n * 70} className={x.c}>
@@ -130,7 +130,7 @@ function Why() {
   return (
     <section className="bg-canvas py-14">
       <div className="mx-auto max-w-6xl px-4">
-        <Reveal><span className="eyebrow">Why families choose us</span><h2 className="mt-2 text-3xl font-bold text-navy-800 sm:text-4xl">What children get here</h2></Reveal>
+        <Reveal dir="blur"><span className="eyebrow">Why families choose us</span><h2 className="mt-2 text-3xl font-bold text-navy-800 sm:text-4xl">What children get here</h2></Reveal>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {why.map(({ icon: Icon, t, d }, n) => (
             <Reveal key={t} delay={n * 90} className="spot lift group rounded-2xl bg-white p-6 ring-1 ring-slate-200">
@@ -164,7 +164,7 @@ function Community() {
     <section className="mx-auto max-w-6xl px-4 py-16">
       <div className="grid items-center gap-10 md:grid-cols-2">
         <div>
-          <Reveal><span className="eyebrow">Faith and care</span><h2 className="mt-2 text-3xl font-bold text-navy-800 sm:text-4xl">Every day begins with <span className="text-gradient">prayer and gratitude</span></h2></Reveal>
+          <Reveal dir="blur"><span className="eyebrow">Faith and care</span><h2 className="mt-2 text-3xl font-bold text-navy-800 sm:text-4xl">Every day begins with <span className="text-gradient">prayer and gratitude</span></h2></Reveal>
           <Reveal delay={100}><p className="mt-4 text-lg leading-relaxed text-slate-600">The day starts with children praying together under the trees. The sisters who run the school are part of daily life, in the classroom, the office and the courtyard, so each child is looked after and known.</p></Reveal>
           <Reveal delay={200}><ul className="mt-6 space-y-3 text-slate-700">
             {['Morning prayer for the whole school', 'Sisters and teachers who know every child', 'Lessons that sometimes move out into the courtyard'].map((t) => <li key={t} className="flex items-start gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-teal-600" />{t}</li>)}

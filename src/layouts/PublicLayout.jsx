@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X, MapPin, Phone, Mail, Clock, ArrowUp, Home, GraduationCap, Images, MessageCircle, ArrowRight, Facebook, Instagram, Youtube, LogOut, PartyPopper, LayoutDashboard } from 'lucide-react';
+import { Menu, X, MapPin, Phone, Mail, Clock, ArrowUp, MessageCircle, ArrowRight, Facebook, Instagram, Youtube, LogOut, LayoutDashboard } from 'lucide-react';
 import Preloader from '../components/Preloader';
+import MotionFX from '../components/MotionFX';
 import { school, img, programmes, gallery } from '../config/school';
 import { useAuth } from '../context/AuthContext';
 import { ROLE_HOME } from '../utils/roles';
@@ -10,7 +11,7 @@ const links = [['/', 'Home'], ['/about', 'About'], ['/classes', 'Classes'], ['/e
 
 export default function PublicLayout() {
   const [open, setOpen] = useState(false); const { pathname } = useLocation(); const { user, logout } = useAuth();
-  const [scrolled, setScrolled] = useState(false); const [progress, setProgress] = useState(0); const [showTop, setShowTop] = useState(false);
+  const [scrolled, setScrolled] = useState(false); const [progress, setProgress] = useState(0); const [showTop, setShowTop] = useState(false); const [hide, setHide] = useState(false);
 
   const prevPath = useRef(pathname); const [wipe, setWipe] = useState(0);
   useEffect(() => {
@@ -20,8 +21,12 @@ export default function PublicLayout() {
     setWipe((n) => n + 1);
   }, [pathname]);
   useEffect(() => {
+    let last = 0;
     const on = () => {
       const y = window.scrollY, h = document.documentElement.scrollHeight - window.innerHeight;
+      // hide the header while reading down the page, bring it back when scrolling up
+      if (y < 420 || y < last - 4) setHide(false); else if (y > last + 4) setHide(true);
+      last = y;
       setScrolled(y > 24); setShowTop(y > 700); setProgress(h > 0 ? y / h : 0);
     };
     on(); window.addEventListener('scroll', on, { passive: true }); return () => window.removeEventListener('scroll', on);
@@ -32,15 +37,16 @@ export default function PublicLayout() {
   const socials = [[Facebook, 'Facebook', school.social?.facebook], [Instagram, 'Instagram', school.social?.instagram], [Youtube, 'YouTube', school.social?.youtube]].filter(([, , h]) => h);
   const cls = ({ isActive }) => `underline-grow px-1 py-2 text-sm font-semibold ${isActive ? 'active text-royal-600' : 'text-slate-600 hover:text-navy-800'}`;
   return (
-    <div className="public flex min-h-screen flex-col bg-white text-ink" onPointerMove={spot}>
-      <Preloader />
+    <div className="public relative flex min-h-screen flex-col overflow-x-hidden bg-white text-ink" onPointerMove={spot}>
+      <Preloader /><MotionFX />
+      <div className="orb orb-a" aria-hidden="true" /><div className="orb orb-b" aria-hidden="true" />
       {wipe > 0 && (
         <div key={wipe} className="pointer-events-none fixed inset-0 z-[80] overflow-hidden" aria-hidden="true">
           <div className="absolute inset-0 translate-x-full animate-wipe bg-teal-500" style={{ animationDelay: '.12s' }} />
           <div className="absolute inset-0 translate-x-full animate-wipe bg-navy-800" />
         </div>)}
       <div className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-teal-500" style={{ transform: `scaleX(${progress})` }} aria-hidden="true" />
-      <header className={`sticky top-0 z-40 border-b bg-white/90 backdrop-blur transition-all duration-300 ${scrolled ? 'border-slate-200 shadow-md' : 'border-transparent'}`}>
+      <header className={`sticky top-0 z-40 border-b bg-white/90 backdrop-blur transition-all duration-300 ${hide && !open ? '-translate-y-full' : 'translate-y-0'} ${scrolled ? 'border-slate-200 shadow-md' : 'border-transparent'}`}>
         <div className={`mx-auto flex max-w-6xl items-center gap-4 px-4 transition-all duration-300 ${scrolled ? 'h-14' : 'h-20'}`}>
           <Link to="/" className="flex items-center gap-3">
             <img src={img('logo.png')} alt="" className={`transition-all duration-300 ${scrolled ? 'h-9 w-9' : 'h-12 w-12'}`} />
@@ -99,7 +105,7 @@ export default function PublicLayout() {
 
         <div className="pointer-events-none select-none overflow-hidden text-center" aria-hidden="true"><p className="watermark -mb-4 text-[22vw] font-bold sm:text-[16vw]">CARMEL</p></div>
         <div className="relative border-t border-white/10">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-5 pb-24 text-xs md:pb-5">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-5 text-xs">
             <p>© {new Date().getFullYear()} Skiez Technologies India Private Limited. All rights reserved.</p>
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="group inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 font-semibold text-white transition hover:bg-teal-500">Back to top <ArrowUp className="h-3.5 w-3.5 transition group-hover:-translate-y-1" /></button>
           </div>
@@ -111,14 +117,7 @@ export default function PublicLayout() {
           <MessageCircle className="h-5 w-5" /><span className="max-w-0 overflow-hidden whitespace-nowrap text-sm font-semibold transition-all duration-300 group-hover:max-w-[8rem] group-hover:pr-1.5">Enquire now</span>
         </Link>)}
 
-      <nav aria-label="Quick" className="fixed inset-x-3 bottom-3 z-40 md:hidden">
-        <ul className="mx-auto flex max-w-sm items-center justify-between rounded-full bg-navy-900/95 px-2 py-1.5 shadow-2xl ring-1 ring-white/10 backdrop-blur">
-          {[['/', Home, 'Home'], ['/classes', GraduationCap, 'Classes'], ['/gallery', Images, 'Gallery'], ['/events', PartyPopper, 'Events'], ['/contact', MessageCircle, 'Contact'], ...(user ? [[ROLE_HOME[user.role], LayoutDashboard, 'Account']] : [])].map(([to, Icon, l]) => (
-            <li key={to} className="flex-1"><NavLink to={to} end className={({ isActive }) => `flex flex-col items-center gap-0.5 rounded-full py-1.5 text-[11px] font-semibold transition ${isActive ? 'bg-teal-500 text-white' : 'text-slate-300'}`}><Icon className="h-5 w-5" />{l}</NavLink></li>))}
-        </ul>
-      </nav>
-
-      <button aria-label="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className={`fixed bottom-20 right-4 z-40 rounded-full bg-royal-500 p-3 text-white shadow-lg transition-all duration-300 hover:bg-royal-600 md:bottom-5 md:right-5 ${showTop ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-4 opacity-0'}`}><ArrowUp className="h-5 w-5" /></button>
+      <button aria-label="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className={`fixed bottom-5 right-4 z-40 rounded-full bg-royal-500 p-3 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-royal-600 md:right-5 ${showTop ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-4 opacity-0'}`}><ArrowUp className="h-5 w-5" /></button>
     </div>
   );
 }
