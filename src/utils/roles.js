@@ -1,10 +1,5 @@
 import { API_URL } from '../services/api';
-export const ROLE_LABELS = {
-  super_admin: 'Super Admin', admin: 'Principal / Admin', teacher: 'Teacher', student: 'Student',
-  parent: 'Parent', accountant: 'Accountant', librarian: 'Librarian',
-};
-export const ROLE_HOME = {
-  super_admin: '/admin', admin: '/admin', teacher: '/teacher', student: '/student',
-  parent: '/parent', accountant: '/accountant', librarian: '/librarian',
-};
+// The portal has one role: Admin. The admin can do everything.
+export const ROLE_LABELS = { admin: 'Admin' };
+export const ROLE_HOME = { admin: '/admin' };
 export const API_ORIGIN = API_URL.replace(/\/api$/, '');

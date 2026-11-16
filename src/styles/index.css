@@ -25,7 +25,7 @@
   .btn-shine { position: relative; overflow: hidden; }
   .btn-shine::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); transform: translateX(-120%); transition: transform .7s; }
   .btn-shine:hover::after { transform: translateX(120%); }
-  .lift { transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s; }
+  .lift { transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s, opacity .8s; }
   .lift:hover { transform: translateY(-6px); box-shadow: 0 18px 36px -14px rgba(15,37,72,.35); }
   .underline-grow { background: linear-gradient(currentColor, currentColor) 0 100% / 0 2px no-repeat; transition: background-size .3s; }
   .underline-grow:hover, .underline-grow.active { background-size: 100% 2px; }
@@ -78,3 +78,20 @@ html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
 @media (prefers-reduced-motion: reduce) { .confetti { display: none; } }
 .foot-link { position: relative; display: inline-block; transition: color .2s, transform .25s; }
 .foot-link:hover { color: #fff; transform: translateX(4px); }
+
+/* ---------- admin dashboard ---------- */
+.dash-bg { background: radial-gradient(60rem 30rem at 85% -10%, rgba(47,95,208,.10), transparent 60%), radial-gradient(50rem 28rem at -10% 110%, rgba(20,163,154,.10), transparent 60%), #f1f3f6; }
+.dark .dash-bg { background: radial-gradient(60rem 30rem at 85% -10%, rgba(47,95,208,.22), transparent 60%), radial-gradient(50rem 28rem at -10% 110%, rgba(20,163,154,.16), transparent 60%), #0a1a35; }
+.dash-card { position: relative; overflow: hidden; border-radius: 1.25rem; background: #fff; padding: 1.25rem; box-shadow: 0 1px 2px rgba(15,37,72,.06); border: 1px solid rgb(226 232 240); transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s, opacity .8s; }
+.dark .dash-card { background: #0f2548; border-color: rgba(255,255,255,.08); }
+.dash-card::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s; background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), rgba(20,163,154,.16), transparent 70%); }
+.dash-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -18px rgba(15,37,72,.35); }
+.dash-card:hover::before { opacity: 1; }
+.aurora-card { background: linear-gradient(120deg, #16315f, #2f5fd0 55%, #14a39a); background-size: 200% 200%; animation: gshift2 12s ease-in-out infinite; }
+.aurora { position: absolute; inset: -30%; z-index: -10; pointer-events: none; background: radial-gradient(30% 30% at 20% 30%, rgba(255,201,77,.35), transparent 70%), radial-gradient(35% 35% at 80% 70%, rgba(94,234,212,.35), transparent 70%); animation: aurora 14s ease-in-out infinite alternate; filter: blur(20px); }
+@keyframes aurora { to { transform: translate(6%, 8%) rotate(14deg) scale(1.12); } }
+@keyframes gshift2 { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+.side-glow { position: absolute; left: -40%; top: -10%; width: 180%; height: 40%; pointer-events: none; background: radial-gradient(closest-side, rgba(20,163,154,.35), transparent); animation: aurora 10s ease-in-out infinite alternate; }
+.nav-active { background: linear-gradient(90deg, #2f5fd0, #14a39a); box-shadow: 0 8px 20px -8px rgba(47,95,208,.8); }
+.nav-active::before { content: ''; position: absolute; left: -.75rem; top: 20%; bottom: 20%; width: 4px; border-radius: 4px; background: #ffc94d; }
+@media (prefers-reduced-motion: reduce) { .aurora-card, .aurora, .side-glow { animation: none; } }

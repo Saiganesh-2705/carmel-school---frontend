@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { Menu, X, MapPin, Phone, Mail, Clock, ArrowUp, Home, GraduationCap, Images, MessageCircle, ArrowRight, Facebook, Instagram, Youtube, LogIn, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, X, MapPin, Phone, Mail, Clock, ArrowUp, Home, GraduationCap, Images, MessageCircle, ArrowRight, Facebook, Instagram, Youtube, LogOut, PartyPopper, LayoutDashboard } from 'lucide-react';
 import Preloader from '../components/Preloader';
 import { school, img, programmes, gallery } from '../config/school';
 import { useAuth } from '../context/AuthContext';
@@ -48,10 +48,10 @@ export default function PublicLayout() {
           </Link>
           <nav className="ml-auto hidden items-center gap-5 lg:flex" aria-label="Main">
             {links.map(([to, l]) => <NavLink key={to} to={to} end className={cls}>{l}</NavLink>)}
-            {user ? (<>
+            {user && (<>
               <Link to={ROLE_HOME[user.role]} className="btn-primary btn-shine"><LayoutDashboard className="h-4 w-4" aria-hidden="true" />Dashboard</Link>
               <button onClick={logout} aria-label="Sign out" title="Sign out" className="btn-ghost p-2"><LogOut className="h-4 w-4" /></button>
-            </>) : <Link to="/login" className="btn-primary btn-shine"><LogIn className="h-4 w-4" aria-hidden="true" />Login</Link>}
+            </>)}
           </nav>
           <button className="btn-ghost ml-auto lg:hidden" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button>
         </div>
@@ -59,7 +59,7 @@ export default function PublicLayout() {
           <nav className="min-h-0 overflow-hidden" aria-label="Mobile" aria-hidden={!open}>
             <div className="border-t border-slate-200 p-3">
               {links.map(([to, l]) => <NavLink key={to} to={to} end tabIndex={open ? 0 : -1} className={({ isActive }) => `block rounded-md px-3 py-3 font-medium ${isActive ? 'bg-slate-100 text-royal-600' : ''}`}>{l}</NavLink>)}
-              <Link to={user ? ROLE_HOME[user.role] : '/login'} tabIndex={open ? 0 : -1} className="btn-primary mt-2 w-full">{user ? <><LayoutDashboard className="h-4 w-4" aria-hidden="true" />My dashboard</> : <><LogIn className="h-4 w-4" aria-hidden="true" />Login to portal</>}</Link>
+              {user && <Link to={ROLE_HOME[user.role]} tabIndex={open ? 0 : -1} className="btn-primary mt-2 w-full"><LayoutDashboard className="h-4 w-4" aria-hidden="true" />My dashboard</Link>}
               {user && <button onClick={logout} tabIndex={open ? 0 : -1} className="btn-ghost mt-1 w-full"><LogOut className="h-4 w-4" aria-hidden="true" />Sign out</button>}
             </div>
           </nav>
@@ -86,7 +86,7 @@ export default function PublicLayout() {
             <p className="mt-4 max-w-sm text-sm leading-relaxed">A {school.board} school where children learn through play, music, sport and celebration, in a caring community of sisters, teachers and families.</p>
             {socials.length > 0 && <div className="mt-5 flex gap-2">{socials.map(([Icon, label, href]) => <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="rounded-full bg-white/10 p-2.5 transition hover:-translate-y-1 hover:bg-teal-500 hover:text-white"><Icon className="h-4 w-4" /></a>)}</div>}
           </div>
-          <div className="lg:col-span-2"><h2 className="font-sans text-sm font-bold uppercase tracking-widest text-white">Explore</h2><ul className="mt-4 space-y-2.5 text-sm">{links.map(([to, l]) => <li key={to}><Link className="foot-link" to={to}>{l}</Link></li>)}<li><Link className="foot-link" to={user ? ROLE_HOME[user.role] : '/login'}>{user ? 'My dashboard' : 'Portal login'}</Link></li></ul></div>
+          <div className="lg:col-span-2"><h2 className="font-sans text-sm font-bold uppercase tracking-widest text-white">Explore</h2><ul className="mt-4 space-y-2.5 text-sm">{links.map(([to, l]) => <li key={to}><Link className="foot-link" to={to}>{l}</Link></li>)}<li><Link className="foot-link" to={user ? ROLE_HOME[user.role] : '/login'}>{user ? 'My dashboard' : 'Admin'}</Link></li></ul></div>
           <div className="lg:col-span-2"><h2 className="font-sans text-sm font-bold uppercase tracking-widest text-white">Classes</h2><ul className="mt-4 space-y-2.5 text-sm">{programmes.map((c) => <li key={c.id}><Link className="foot-link" to={`/classes#${c.id}`}>{c.name}</Link></li>)}</ul></div>
           <div className="lg:col-span-4"><h2 className="font-sans text-sm font-bold uppercase tracking-widest text-white">Visit and contact</h2><ul className="mt-4 space-y-3 text-sm">
             {school.address && <li className="flex gap-3"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-teal-500" /><a className="foot-link" href={mapsLink} target="_blank" rel="noopener noreferrer" title="Open in Google Maps">{school.address}</a></li>}
@@ -113,7 +113,7 @@ export default function PublicLayout() {
 
       <nav aria-label="Quick" className="fixed inset-x-3 bottom-3 z-40 md:hidden">
         <ul className="mx-auto flex max-w-sm items-center justify-between rounded-full bg-navy-900/95 px-2 py-1.5 shadow-2xl ring-1 ring-white/10 backdrop-blur">
-          {[['/', Home, 'Home'], ['/classes', GraduationCap, 'Classes'], ['/gallery', Images, 'Gallery'], ['/contact', MessageCircle, 'Contact'], [user ? ROLE_HOME[user.role] : '/login', user ? LayoutDashboard : LogIn, user ? 'Account' : 'Login']].map(([to, Icon, l]) => (
+          {[['/', Home, 'Home'], ['/classes', GraduationCap, 'Classes'], ['/gallery', Images, 'Gallery'], ['/events', PartyPopper, 'Events'], ['/contact', MessageCircle, 'Contact'], ...(user ? [[ROLE_HOME[user.role], LayoutDashboard, 'Account']] : [])].map(([to, Icon, l]) => (
             <li key={to} className="flex-1"><NavLink to={to} end className={({ isActive }) => `flex flex-col items-center gap-0.5 rounded-full py-1.5 text-[11px] font-semibold transition ${isActive ? 'bg-teal-500 text-white' : 'text-slate-300'}`}><Icon className="h-5 w-5" />{l}</NavLink></li>))}
         </ul>
       </nav>

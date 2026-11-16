@@ -28,7 +28,7 @@ export default function Login() {
     } catch (e) { setError(errMsg(e)); }
   };
   return (
-    <AuthShell title="Sign in" subtitle="Use the email your school registered for you.">
+    <AuthShell title="Admin sign in" subtitle="Use the admin email registered for the school.">
       {offline && (
         <div role="alert" className="mb-4 flex gap-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-800 ring-1 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-200 dark:ring-amber-500/30">
           <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />

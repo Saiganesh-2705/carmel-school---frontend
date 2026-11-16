@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
+import { useSearchParams } from 'react-router-dom';
 import { Pencil, Plus, Trash2, X } from 'lucide-react';
 import api, { errMsg } from '../services/api';
 import Spinner from '../components/Spinner';
@@ -8,16 +9,17 @@ import NoticeCard from '../components/NoticeCard';
 import { useAuth } from '../context/AuthContext';
 
 export default function Notices() {
-  const { user } = useAuth(); const admin = ['admin', 'super_admin'].includes(user.role);
+  const { user } = useAuth(); const admin = user.role === 'admin'; const [sp, setSp] = useSearchParams();
   const [rows, setRows] = useState([]); const [loading, setLoading] = useState(true); const [editing, setEditing] = useState(null);
   const load = useCallback(async () => {
     try { const { data } = await api.get('/notices'); setRows(data.data); } catch (e) { toast.error(errMsg(e)); } finally { setLoading(false); }
   }, []);
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { if (sp.get('new')) { setEditing({}); setSp({}, { replace: true }); } }, [sp, setSp]);
   const remove = async (n) => { if (!confirm(`Delete “${n.title}”?`)) return; try { await api.delete(`/notices/${n._id}`); toast.success('Notice deleted'); load(); } catch (e) { toast.error(errMsg(e)); } };
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-4 flex items-center gap-3"><h1 className="mr-auto text-2xl font-bold">Notices</h1>{admin && <button className="btn-primary" onClick={() => setEditing({})}><Plus className="h-4 w-4" /> New notice</button>}</div>
+      <div className="mb-4 flex items-center gap-3"><h1 className="mr-auto text-2xl font-bold">Updates &amp; notices</h1>{admin && <button className="btn-primary" onClick={() => setEditing({})}><Plus className="h-4 w-4" /> New notice</button>}</div>
       {loading ? <Spinner /> : rows.length === 0 ? <p className="card text-center text-sm text-slate-500">No notices yet.{admin && ' Use “New notice” to post the first one.'}</p> : (
         <div className="space-y-3">{rows.map((n) => (
           <NoticeCard key={n._id} n={admin ? n : { ...n, audience: undefined }} actions={admin && (

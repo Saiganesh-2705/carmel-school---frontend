@@ -7,10 +7,10 @@ export default function AuthShell({ title, subtitle, children }) {
       <aside className="hidden flex-col justify-between bg-navy-800 p-12 text-white lg:flex">
         <Link to="/" className="flex items-center gap-2 text-lg font-semibold"><img src={img('logo.png')} alt="" className="h-10 w-10 rounded-full bg-white p-0.5" /> {school.name}</Link>
         <div>
-          <p className="max-w-md text-3xl font-semibold leading-snug">Sign in to the school portal.</p>
-          <p className="mt-4 max-w-md text-slate-300">Teachers, students, parents and staff each sign in to a workspace built for their role.</p>
+          <p className="max-w-md text-3xl font-semibold leading-snug">Admin sign in.</p>
+          <p className="mt-4 max-w-md text-slate-300">Manage notices, enquiries and the school website from one place.</p>
         </div>
-        <p className="text-sm text-slate-400">Authorized users only</p>
+        <p className="text-sm text-slate-400">Authorised admins only</p>
       </aside>
       <main className="flex flex-col p-6">
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
