@@ -15,7 +15,7 @@ export default function Login() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({ defaultValues: { remember: true } });
 
   // Tell the user straight away if the backend is not reachable, instead of a silent failed login.
-  useEffect(() => { api.get('/health', { timeout: 6000 }).catch(() => setOffline(true)); }, []);
+  useEffect(() => { api.get('/health', { timeout: 60000 }).catch(() => setOffline(true)); }, []);
 
   if (user) return <Navigate to={ROLE_HOME[user.role]} replace />;
   const onSubmit = async (v) => {
