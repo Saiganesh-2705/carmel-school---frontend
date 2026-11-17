@@ -24,7 +24,7 @@ export function SlideLayers({ i, zoom = 1.08 }) {
   return heroSlides.map((s, n) => (
     <div key={s.src} className="absolute inset-0 -z-10" style={{ opacity: n === i ? 1 : 0, transition: `opacity ${FADE_MS}ms ease-out` }} aria-hidden={n !== i}>
       <img src={img(s.src)} alt={n === i ? s.alt : ''} className="h-full w-full object-cover will-change-transform"
-        style={{ transform: n === i ? `scale(${zoom})` : 'scale(1)', transition: n === i ? `transform ${SLIDE_MS + FADE_MS}ms linear` : 'none' }} />
+        style={{ filter: 'brightness(1.12) saturate(1.12) contrast(1.03)', transform: n === i ? `scale(${zoom})` : 'scale(1)', transition: n === i ? `transform ${SLIDE_MS + FADE_MS}ms linear` : 'none' }} />
     </div>));
 }
 

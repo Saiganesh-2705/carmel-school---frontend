@@ -6,6 +6,7 @@ import Reveal from '../components/Reveal';
 import LazyImg from '../components/LazyImg';
 import Tilt from '../components/Tilt';
 import Lightbox from '../components/Lightbox';
+import AlbumGrid from '../components/AlbumGrid';
 import { events, img, annualDay } from '../config/school';
 
 export default function Events() {
@@ -13,6 +14,7 @@ export default function Events() {
   return (
     <>
       <PageHero eyebrow="Through the school year" title="Celebrations and events" text="Colour days, festivals, sports and Annual Day: a look at what the year holds for our children." image="pongal-celebration.jpg" />
+      <AlbumGrid heading="Latest celebrations" text="Photo albums from our recent days and events. Tap an album to see every photo." limit={6} link />
       <div className="relative mx-auto max-w-5xl px-4 py-16">
         <div className="absolute inset-y-16 left-1/2 hidden w-px -translate-x-1/2 bg-gradient-to-b from-teal-500/0 via-teal-500/50 to-teal-500/0 md:block" aria-hidden="true" />
         <ol className="space-y-12">

@@ -22,7 +22,7 @@ function Hero() {
   return (
     <section onPointerMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); const g = glow.current; if (g) { g.style.setProperty('--hx', `${e.clientX - r.left}px`); g.style.setProperty('--hy', `${e.clientY - r.top}px`); g.style.opacity = 1; } }} onPointerLeave={() => { if (glow.current) glow.current.style.opacity = 0; }} className="relative isolate flex min-h-[88vh] items-center overflow-hidden bg-navy-900 text-white">
       <SlideLayers i={i} />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-900/90 via-navy-900/55 to-transparent" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-navy-900/65 via-navy-900/20 to-transparent" />
       <div className="hero-grain absolute inset-0 -z-10" aria-hidden="true" />
       <div ref={glow} className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-500" style={{ background: 'radial-gradient(420px circle at var(--hx,50%) var(--hy,50%), rgba(94,234,212,.18), transparent 70%)' }} aria-hidden="true" />
       {[['12%', '18%', 0], ['78%', '14%', 0.8], ['88%', '48%', 1.6], ['62%', '30%', 2.4], ['30%', '10%', 1.2]].map(([l, t, d], n) => (

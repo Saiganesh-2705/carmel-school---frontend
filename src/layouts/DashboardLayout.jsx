@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, UserCog, UserCircle, Bell, Inbox, Globe, Menu, Moon, Sun, LogOut, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
+import { LayoutDashboard, Images, UserCog, UserCircle, Bell, Inbox, Globe, Menu, Moon, Sun, LogOut, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../services/api';
 import { ROLE_HOME, ROLE_LABELS, API_ORIGIN } from '../utils/roles';
 
 const NAV = [
-  { to: '', label: 'Dashboard', icon: LayoutDashboard }, { to: 'notices', label: 'Updates & notices', icon: Bell },
+  { to: '', label: 'Dashboard', icon: LayoutDashboard },
+  { to: 'albums', label: 'Events & gallery', icon: Images },
   { to: 'messages', label: 'Enquiries', icon: Inbox, badge: true }, { to: 'users', label: 'Admin accounts', icon: UserCog }, { to: 'profile', label: 'My profile', icon: UserCircle },
 ];
 

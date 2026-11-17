@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { Bell, Inbox, Megaphone, UserPlus, Globe, Users, UserCheck, ArrowUpRight, Sparkles, Star, CalendarDays } from 'lucide-react';
+import { Bell, Inbox, Images, Globe, Users, UserCheck, ArrowUpRight, Sparkles, Star, CalendarDays } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import Counter from '../components/Counter';
 import Reveal from '../components/Reveal';
-import NoticeCard, { fmtDate } from '../components/NoticeCard';
+import { fmtDate } from '../components/NoticeCard';
 
 const greeting = () => { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'; };
 const BASE = '/admin';
@@ -37,17 +37,15 @@ function Stat({ icon: Icon, label, value, to, grad, n }) {
 }
 
 const actions = [
-  { to: `${BASE}/notices?new=1`, icon: Megaphone, t: 'Post an update', d: 'Notice for the website or portal', grad: 'from-royal-500 to-sky-400' },
   { to: `${BASE}/messages`, icon: Inbox, t: 'Read enquiries', d: 'Admission and contact messages', grad: 'from-amber-500 to-orange-400' },
-  { to: `${BASE}/users`, icon: UserPlus, t: 'Admin accounts', d: 'Add or manage who can sign in', grad: 'from-teal-500 to-emerald-400' },
+  { to: `${BASE}/albums?new=1`, icon: Images, t: 'Add celebration photos', d: 'Shows on Events and Gallery', grad: 'from-teal-500 to-emerald-400' },
   { to: '/', icon: Globe, t: 'View website', d: 'See what visitors see', grad: 'from-fuchsia-500 to-rose-400', ext: true },
 ];
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const [stats, setStats] = useState(null); const [notices, setNotices] = useState([]);
+  const [stats, setStats] = useState(null);
   useEffect(() => {
-    api.get('/notices').then((r) => setNotices(r.data.data.slice(0, 4))).catch(() => {});
     api.get('/stats/overview').then((r) => setStats(r.data.data)).catch(() => {});
   }, []);
   const newMsgs = stats?.messages.new ?? 0; const handled = Math.max((stats?.messages.total ?? 0) - newMsgs, 0);
@@ -65,7 +63,7 @@ export default function AdminDashboard() {
             <h1 className="mt-3 font-display text-3xl font-bold sm:text-5xl">{greeting()}, {user.name.split(' ')[0]}</h1>
             <p className="mt-2 max-w-lg text-white/85">You have full control of the school website and portal. {newMsgs > 0 ? <>There {newMsgs === 1 ? 'is' : 'are'} <b>{newMsgs} new enquir{newMsgs === 1 ? 'y' : 'ies'}</b> waiting.</> : 'No new enquiries right now.'}</p>
             <div className="mt-5 flex flex-wrap gap-3">
-              <Link to={`${BASE}/notices?new=1`} className="btn bg-white px-5 py-2.5 text-navy-800 shadow-lg btn-shine hover:-translate-y-0.5 hover:bg-sun-400"><Megaphone className="h-4 w-4" aria-hidden="true" />Post an update</Link>
+              <Link to={`${BASE}/albums?new=1`} className="btn bg-white px-5 py-2.5 text-navy-800 shadow-lg btn-shine hover:-translate-y-0.5 hover:bg-sun-400"><Images className="h-4 w-4" aria-hidden="true" />Add celebration photos</Link>
               <Link to={`${BASE}/messages`} className="btn bg-white/15 px-5 py-2.5 text-white backdrop-blur hover:bg-white/25">Open enquiries</Link>
             </div>
           </div>
@@ -77,7 +75,7 @@ export default function AdminDashboard() {
         <Stat n={0} icon={Users} label="Admin accounts" value={stats?.users.total} to={`${BASE}/users`} grad="from-royal-500 to-sky-400" />
         <Stat n={1} icon={UserCheck} label="Active accounts" value={stats?.users.active} to={`${BASE}/users`} grad="from-teal-500 to-emerald-400" />
         <Stat n={2} icon={Inbox} label="New enquiries" value={stats?.messages.new} to={`${BASE}/messages`} grad="from-amber-500 to-orange-400" />
-        <Stat n={3} icon={Bell} label="Published notices" value={stats?.notices} to={`${BASE}/notices`} grad="from-fuchsia-500 to-rose-400" />
+        <Stat n={3} icon={Bell} label="Published albums" value={stats?.albums} to={`${BASE}/albums`} grad="from-fuchsia-500 to-rose-400" />
       </div>
 
       <section aria-label="Quick actions">
@@ -122,10 +120,6 @@ export default function AdminDashboard() {
         </Reveal>
       </div>
 
-      <section>
-        <Reveal className="mb-3 flex items-center justify-between"><h2 className="text-lg font-semibold">Notice board</h2><Link className="text-sm font-medium text-royal-500 hover:underline" to={`${BASE}/notices`}>Manage notices</Link></Reveal>
-        {notices.length ? <div className="grid gap-3 lg:grid-cols-2">{notices.map((n, i) => <Reveal key={n._id} delay={i * 80}><NoticeCard n={n} /></Reveal>)}</div> : <p className="dash-card text-sm text-slate-500">No notices yet. Use “Post an update” to publish the first one.</p>}
-      </section>
     </div>
   );
 }

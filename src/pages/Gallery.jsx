@@ -4,6 +4,7 @@ import PageHero from '../components/PageHero';
 import Reveal from '../components/Reveal';
 import LazyImg from '../components/LazyImg';
 import Lightbox from '../components/Lightbox';
+import AlbumGrid from '../components/AlbumGrid';
 import { gallery, img } from '../config/school';
 
 const cats = ['All', ...new Set(gallery.map((g) => g.cat))];
@@ -15,6 +16,7 @@ export default function Gallery() {
   return (
     <>
       <PageHero eyebrow="Photo gallery" title="Moments from around the school" text={`${gallery.length} photos from celebrations, classrooms, the stage and the field.`} image="annual-day-hoop-dance.jpg" />
+      <AlbumGrid heading="Photo albums" text="One album for each celebration. Tap an album to open all of its photos." filters />
       <div className="mx-auto max-w-6xl px-4 py-12">
         <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0" role="group" aria-label="Filter photos">
           {cats.map((c) => (

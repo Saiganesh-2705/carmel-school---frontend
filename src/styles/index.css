@@ -58,7 +58,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
 .eyebrow::before { content: ''; width: 1.75rem; height: 2px; background: currentColor; border-radius: 2px; }
 .dots { background-image: radial-gradient(rgba(36,79,179,.18) 1.5px, transparent 1.5px); background-size: 18px 18px; }
 .page-in { animation: fadeIn .6s cubic-bezier(.2,.7,.2,1) both; }
-.hero-grain::before { content: ''; position: absolute; inset: 0; background: radial-gradient(60% 50% at 80% 20%, rgba(47,95,208,.35), transparent 70%); pointer-events: none; }
+.hero-grain::before { content: ''; position: absolute; inset: 0; background: radial-gradient(60% 50% at 80% 20%, rgba(47,95,208,.18), transparent 70%); pointer-events: none; }
 @media (hover: none) { .lift:hover { transform: none; box-shadow: none; } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .tilt { transform: none !important; } }
 
@@ -180,3 +180,15 @@ input[type=checkbox]:checked { animation: tick .35s cubic-bezier(.3,1.6,.5,1); }
 .dash-card.ncard:hover { transform: translateY(-5px); }
 .pro-toast { animation: toastIn .5s cubic-bezier(.2,.9,.3,1.2) both !important; }
 @keyframes toastIn { from { opacity: 0; transform: translateX(40px) scale(.9); } to { opacity: 1; transform: none; } }
+
+/* ---------- photo albums ---------- */
+.album { padding-bottom: .25rem; }
+.album-back { position: absolute; inset: 0; border-radius: 1rem; background: #fff; box-shadow: 0 6px 16px -8px rgba(15,37,72,.4); ring: 1px; transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.album-back-1 { transform: rotate(-2.5deg) translateY(3px); background: #dfe7f5; }
+.album-back-2 { transform: rotate(2.5deg) translateY(3px); background: #cfeeea; }
+.album:hover .album-back-1 { transform: rotate(-7deg) translate(-10px, 4px); }
+.album:hover .album-back-2 { transform: rotate(7deg) translate(10px, 4px); }
+@media (prefers-reduced-motion: reduce) { .album-back { transition: none; } }
+
+/* keep headings readable on the brighter photos */
+section.isolate h1, section.isolate h1 ~ p, section.isolate nav[aria-label="Breadcrumb"] { text-shadow: 0 2px 14px rgba(0,0,0,.5); }

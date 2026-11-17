@@ -8,7 +8,7 @@ export default function AuthShell({ title, subtitle, children }) {
         <Link to="/" className="flex items-center gap-2 text-lg font-semibold"><img src={img('logo.png')} alt="" className="h-10 w-10 rounded-full bg-white p-0.5" /> {school.name}</Link>
         <div>
           <p className="max-w-md text-3xl font-semibold leading-snug">Admin sign in.</p>
-          <p className="mt-4 max-w-md text-slate-300">Manage notices, enquiries and the school website from one place.</p>
+          <p className="mt-4 max-w-md text-slate-300">Manage event photos, enquiries and the school website from one place.</p>
         </div>
         <p className="text-sm text-slate-400">Authorised admins only</p>
       </aside>
@@ -16,7 +16,7 @@ export default function AuthShell({ title, subtitle, children }) {
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
           <Link to="/" className="inline-flex items-center gap-2 font-semibold hover:text-royal-500"><ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back to website</Link>
           <nav aria-label="Website" className="flex gap-4 text-slate-500 dark:text-slate-400">
-            <Link className="hover:text-royal-500" to="/about">About</Link><Link className="hover:text-royal-500" to="/notices">Notices</Link><Link className="hover:text-royal-500" to="/contact">Contact</Link>
+            <Link className="hover:text-royal-500" to="/about">About</Link><Link className="hover:text-royal-500" to="/events">Events</Link><Link className="hover:text-royal-500" to="/contact">Contact</Link>
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-center py-8">

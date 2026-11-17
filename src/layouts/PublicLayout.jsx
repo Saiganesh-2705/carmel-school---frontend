@@ -7,7 +7,7 @@ import { school, img, programmes, gallery } from '../config/school';
 import { useAuth } from '../context/AuthContext';
 import { ROLE_HOME } from '../utils/roles';
 
-const links = [['/', 'Home'], ['/about', 'About'], ['/classes', 'Classes'], ['/events', 'Events'], ['/notices', 'Notices'], ['/gallery', 'Gallery'], ['/contact', 'Contact']];
+const links = [['/', 'Home'], ['/about', 'About'], ['/classes', 'Classes'], ['/events', 'Events'], ['/gallery', 'Gallery'], ['/contact', 'Contact']];
 
 export default function PublicLayout() {
   const [open, setOpen] = useState(false); const { pathname } = useLocation(); const { user, logout } = useAuth();

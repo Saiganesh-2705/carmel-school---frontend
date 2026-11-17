@@ -13,7 +13,8 @@ export const school = {
   announcement: '', // e.g. 'Admissions open for 2027–28'. Shows a bar above the header. Empty = hidden.
   social: { facebook: '', instagram: '', youtube: '' }, // full page URLs. Empty ones are hidden.
 };
-export const img = (n) => `/images/${n}`;
+// Local school photos live in /images; full addresses (uploaded notice photos, previews) pass through unchanged.
+export const img = (n) => (/^(https?:|blob:|data:)/.test(n) ? n : `/images/${n}`);
 
 export const heroSlides = [
   { src: 'campus-entrance.jpg', alt: 'The painted entrance of Carmel International School' },

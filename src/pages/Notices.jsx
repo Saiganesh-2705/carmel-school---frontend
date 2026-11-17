@@ -2,13 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'react-router-dom';
-import { ImagePlus, Pencil, Plus, Trash2, FileText, Loader2, Send, Search, Megaphone } from 'lucide-react';
+import { ImagePlus, Pencil, Plus, Trash2, FileText, Loader2, Send, Search, Megaphone, X } from 'lucide-react';
 import api, { errMsg } from '../services/api';
 import Spinner from '../components/Spinner';
 import Modal from '../components/Modal';
 import PageBanner from '../components/PageBanner';
 import { useConfirm } from '../components/Confirm';
-import NoticeCard, { CATS, noticeImg } from '../components/NoticeCard';
+import NoticeCard, { CATS, noticePhotos } from '../components/NoticeCard';
 import { useAuth } from '../context/AuthContext';
 
 export function CategoryChips({ rows, value, onChange }) {
@@ -37,7 +37,7 @@ export default function Notices() {
     const t = q.trim().toLowerCase();
     return rows.filter((r) => (cat === 'all' || (r.category || 'general') === cat) && (!t || `${r.title} ${r.body}`.toLowerCase().includes(t)));
   }, [rows, cat, q]);
-  const stats = [['Total notices', rows.length], ['Published', rows.filter((r) => r.isPublished !== false).length], ['With photo', rows.filter((r) => r.hasImage).length], ['With article', rows.filter((r) => r.hasArticle).length]];
+  const stats = [['Total notices', rows.length], ['Published', rows.filter((r) => r.isPublished !== false).length], ['With photos', rows.filter((r) => r.hasImage).length], ['With article', rows.filter((r) => r.hasArticle).length]];
   const remove = async (n) => {
     if (!(await confirm({ title: 'Delete this notice?', message: `“${n.title}” will be removed from the website and cannot be brought back.`, confirmText: 'Yes, delete', tone: 'danger' }))) return;
     setRemoving(n._id);
@@ -75,28 +75,36 @@ function NoticeForm({ initial, onClose, onDone }) {
   const confirm = useConfirm();
   const isEdit = !!initial._id;
   const { register, handleSubmit, watch, formState: { errors, isSubmitting, isDirty } } = useForm({ defaultValues: { title: initial.title || '', body: initial.body || '', article: initial.article || '', category: initial.category || 'general', audience: initial.audience || 'both', pinned: !!initial.pinned, isPublished: initial.isPublished !== false } });
-  const [file, setFile] = useState(null); const [preview, setPreview] = useState(null); const [removeImg, setRemoveImg] = useState(false); const [drag, setDrag] = useState(false);
   const v = watch();
-  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
-  const pick = (f) => {
-    if (!f) return;
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type)) return toast.error('Choose a JPG, PNG or WebP image');
-    if (f.size > 3 * 1024 * 1024) return toast.error('Image must be under 3 MB');
-    setFile(f); setPreview(URL.createObjectURL(f)); setRemoveImg(false);
+  const MAX = 10;
+  const existing = initial._id ? noticePhotos(initial).map((url, i) => ({ id: initial.photos[i], url })) : [];
+  const [kept, setKept] = useState(existing); const [removed, setRemoved] = useState([]); const [added, setAdded] = useState([]); const [drag, setDrag] = useState(false);
+  useEffect(() => () => added.forEach((a) => URL.revokeObjectURL(a.url)), []); // eslint-disable-line
+  const total = kept.length + added.length;
+  const pickMany = (list) => {
+    const files = Array.from(list || []); if (!files.length) return;
+    const ok = []; let skipped = 0;
+    files.forEach((f) => { if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type) || f.size > 3 * 1024 * 1024) skipped += 1; else ok.push(f); });
+    const room = MAX - total; if (ok.length > room) { skipped += ok.length - room; ok.length = Math.max(room, 0); }
+    if (skipped) toast.error(`${skipped} photo${skipped > 1 ? 's were' : ' was'} skipped. Use JPG, PNG or WebP under 3 MB, up to ${MAX} photos.`);
+    setAdded((a) => [...a, ...ok.map((file) => ({ file, url: URL.createObjectURL(file), key: `${file.name}-${file.size}-${Math.random()}` }))]);
   };
-  const shownImg = removeImg ? null : preview || (initial._id && initial.hasImage ? noticeImg(initial) : null);
+  const dropKept = (p) => { setKept((k) => k.filter((x) => x.id !== p.id)); setRemoved((r) => [...r, p.id]); };
+  const dropAdded = (p) => { URL.revokeObjectURL(p.url); setAdded((a) => a.filter((x) => x.key !== p.key)); };
+  const photoUrls = [...kept.map((k) => k.url), ...added.map((a) => a.url)];
+  const changedPhotos = removed.length > 0 || added.length > 0;
   const onSubmit = async (val) => {
     const fields = { title: val.title.trim(), body: val.body.trim(), article: (val.article || '').trim(), category: val.category, audience: val.audience, pinned: val.pinned, isPublished: val.isPublished };
     let payload = fields;
-    if (file || removeImg) { // an image is involved, so send it as a form
+    if (changedPhotos) { // photos are involved, so send everything as a form
       payload = new FormData(); Object.entries(fields).forEach(([k, x]) => payload.append(k, x));
-      if (file) payload.append('image', file); else payload.append('removeImage', 'true');
+      added.forEach((a) => payload.append('images', a.file)); if (removed.length) payload.append('removeImages', JSON.stringify(removed));
     }
     try {
       // Make sure the server is the new version before sending photos or articles (an old server would silently drop them or reject the form).
-      if (file || removeImg || fields.article || fields.category !== 'general') {
+      if (changedPhotos || fields.article || fields.category !== 'general') {
         const h = await api.get('/health').catch(() => null);
-        if (!h?.data?.features?.includes('notice-media')) { toast.error('The server is still the old version. Start or deploy the new server (see the documentation), then try again.', { duration: 7000 }); return; }
+        if (!h?.data?.features?.includes('notice-gallery')) { toast.error('The server is still the old version. Start or deploy the new server (see the documentation), then try again.', { duration: 7000 }); return; }
       }
       if (isEdit) await api.put(`/notices/${initial._id}`, payload); else await api.post('/notices', payload);
       toast.success(isEdit ? 'Notice updated' : 'Notice posted'); onDone();
@@ -104,27 +112,29 @@ function NoticeForm({ initial, onClose, onDone }) {
   };
   const st = (i) => ({ animationDelay: `${80 + i * 55}ms` });
   return (
-    <Modal guard={async () => !(isDirty || file || removeImg) || (await confirm({ title: 'Discard this notice?', message: 'What you have typed and any photo you chose will be lost.', confirmText: 'Discard', cancelText: 'Keep editing', tone: 'warn' }))} title={isEdit ? 'Edit notice' : 'New notice'} subtitle="Add a photo and a full article if you like. The preview shows how readers will see it." size="xl" onClose={onClose}>
+    <Modal guard={async () => !(isDirty || changedPhotos) || (await confirm({ title: 'Discard this notice?', message: 'What you have typed and any photo you chose will be lost.', confirmText: 'Discard', cancelText: 'Keep editing', tone: 'warn' }))} title={isEdit ? 'Edit notice' : 'New notice'} subtitle="Add a photo and a full article if you like. The preview shows how readers will see it." size="xl" onClose={onClose}>
       {(close) => (
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="space-y-4">
             <div className="animate-wordIn" style={st(0)}><label className="label" htmlFor="nt">Title</label><input id="nt" className="input" {...register('title', { required: 'Enter a title', minLength: { value: 3, message: 'Too short' } })} />{errors.title && <p className="err">{errors.title.message}</p>}</div>
             <div className="animate-wordIn" style={st(1)}>
-              <span className="label">Cover image <span className="font-normal text-slate-500">(optional, JPG, PNG or WebP, up to 3 MB)</span></span>
-              {shownImg ? (
-                <div className="group relative overflow-hidden rounded-xl">
-                  <img src={shownImg} alt="Cover preview" className="aspect-[16/9] w-full animate-fadeIn object-cover" />
-                  <div className="absolute inset-0 flex items-center justify-center gap-2 bg-navy-900/50 opacity-0 transition group-hover:opacity-100">
-                    <label className="btn-primary cursor-pointer text-sm">Change<input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(e) => pick(e.target.files[0])} /></label>
-                    <button type="button" className="btn bg-white text-sm text-red-600" onClick={() => { setFile(null); setPreview(null); setRemoveImg(true); }}>Remove</button>
-                  </div>
-                </div>
-              ) : (
-                <label onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); pick(e.dataTransfer.files[0]); }}
-                  className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed p-6 text-center text-sm transition-all duration-300 ${drag ? 'scale-[1.02] border-teal-500 bg-teal-500/10' : 'border-slate-300 hover:border-royal-500 hover:bg-royal-500/5 dark:border-white/20'}`}>
-                  <ImagePlus className={`h-8 w-8 text-royal-500 transition-transform duration-300 ${drag ? '-translate-y-1 scale-110' : ''}`} /><span className="font-semibold">Drop an image here or click to choose</span>
-                  <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(e) => pick(e.target.files[0])} />
+              <span className="label">Photos <span className="font-normal text-slate-500">(optional, up to {MAX} · JPG, PNG or WebP · 3 MB each) · {total}/{MAX}</span></span>
+              {total > 0 && (
+                <div className="mb-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
+                  {[...kept.map((k) => ({ ...k, old: true })), ...added].map((p, i) => (
+                    <div key={p.id || p.key} className="group relative aspect-square animate-popIn overflow-hidden rounded-xl ring-1 ring-slate-200" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+                      <img src={p.url} alt={`Photo ${i + 1}`} className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
+                      {i === 0 && <span className="absolute left-1 top-1 rounded-full bg-teal-500 px-1.5 py-0.5 text-[10px] font-bold text-white">Cover</span>}
+                      <button type="button" aria-label={`Remove photo ${i + 1}`} onClick={() => (p.old ? dropKept(p) : dropAdded(p))} className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white opacity-0 transition hover:bg-red-600 group-hover:opacity-100 focus:opacity-100"><X className="h-3.5 w-3.5" /></button>
+                    </div>))}
+                </div>)}
+              {total < MAX && (
+                <label onDragOver={(e) => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)} onDrop={(e) => { e.preventDefault(); setDrag(false); pickMany(e.dataTransfer.files); }}
+                  className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed p-5 text-center text-sm transition-all duration-300 ${drag ? 'scale-[1.02] border-teal-500 bg-teal-500/10' : 'border-slate-300 hover:border-royal-500 hover:bg-royal-500/5 dark:border-white/20'}`}>
+                  <ImagePlus className={`h-8 w-8 text-royal-500 transition-transform duration-300 ${drag ? '-translate-y-1 scale-110' : ''}`} />
+                  <span className="font-semibold">{total ? 'Add more photos' : 'Drop photos here or click to choose'}</span><span className="text-xs text-slate-500">Select many at once, for example every picture from Blue Day</span>
+                  <input type="file" multiple accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(e) => { pickMany(e.target.files); e.target.value = ''; }} />
                 </label>)}
             </div>
             <div className="grid gap-4 sm:grid-cols-2 animate-wordIn" style={st(2)}>
@@ -138,7 +148,7 @@ function NoticeForm({ initial, onClose, onDone }) {
           <div className="lg:sticky lg:top-0 lg:self-start">
             <p className="label">Live preview</p>
             <div className="rounded-2xl bg-slate-100 p-3 dark:bg-white/5">
-              <NoticeCard n={{ ...v, _id: 'preview', createdAt: new Date(), previewImg: shownImg, hasArticle: !!(v.article || '').trim(), title: v.title || 'Your title appears here', body: v.body || 'Your short notice appears here.' }} />
+              <NoticeCard n={{ ...v, _id: 'preview', createdAt: new Date(), previewPhotos: photoUrls, hasArticle: !!(v.article || '').trim(), title: v.title || 'Your title appears here', body: v.body || 'Your short notice appears here.' }} />
             </div>
             <div className="mt-4 flex justify-end gap-2"><button type="button" className="btn-ghost" onClick={close}>Cancel</button><button className="btn-primary btn-shine min-w-[8.5rem]" disabled={isSubmitting}>{isSubmitting ? <><Loader2 className="h-4 w-4 animate-spin" />Saving…</> : <><Send className="h-4 w-4" />{isEdit ? 'Save changes' : 'Post notice'}</>}</button></div>
           </div>
