@@ -140,3 +140,43 @@ html, body { overflow-x: hidden; }
 }
 @media (max-width: 380px) { .public header .font-bold { font-size: .9rem; } }
 @media (prefers-reduced-motion: reduce) { .orb, .public main { animation: none !important; } .reveal-clip { clip-path: none !important; } .reveal { filter: none !important; } }
+
+/* ---------- notices: cards, article reveal ---------- */
+.ncard { transition: transform .45s cubic-bezier(.2,.7,.2,1), box-shadow .45s; }
+.ncard:hover { transform: translateY(-5px); box-shadow: 0 24px 44px -22px rgba(15,37,72,.45); }
+.ncard .nimg img { transition: transform 1s cubic-bezier(.2,.7,.2,1); }
+.ncard:hover .nimg img { transform: scale(1.08); }
+.expand { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows .55s cubic-bezier(.2,.7,.2,1), opacity .45s; }
+.expand.open { grid-template-rows: 1fr; opacity: 1; }
+.expand > div { overflow: hidden; min-height: 0; }
+@media (prefers-reduced-motion: reduce) { .ncard:hover { transform: none; } }
+
+/* ---------- pop-up windows, forms, delete ---------- */
+.modal-in { animation: modalIn .5s cubic-bezier(.2,.9,.3,1.15) both; }
+.modal-out { animation: modalOut .22s ease-in both; }
+.backdrop-out { animation: fadeOutBg .22s ease-in both; }
+@keyframes modalIn { from { opacity: 0; transform: translateY(40px) scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes modalOut { to { opacity: 0; transform: translateY(24px) scale(.95); } }
+@keyframes fadeOutBg { to { opacity: 0; } }
+.modal-bar { height: 4px; background: linear-gradient(90deg, #14a39a, #2f5fd0, #f5b020, #14a39a); background-size: 300% 100%; animation: gshift2 5s linear infinite; }
+.card-out { animation: cardOut .45s cubic-bezier(.5,0,.8,.4) forwards; pointer-events: none; }
+@keyframes cardOut { 40% { transform: scale(.97) rotate(-1deg); } to { opacity: 0; transform: translateX(40px) scale(.9) rotate(2deg); } }
+.input { transition: box-shadow .25s, border-color .25s, transform .25s, background-color .25s; }
+.input:focus { transform: translateY(-1px); box-shadow: 0 10px 22px -12px rgba(47,95,208,.55), 0 0 0 3px rgba(47,95,208,.18); }
+input[type=checkbox] { accent-color: #2f5fd0; width: 1rem; height: 1rem; cursor: pointer; transition: transform .2s cubic-bezier(.3,1.6,.5,1); }
+input[type=checkbox]:active { transform: scale(.7); }
+input[type=checkbox]:checked { animation: tick .35s cubic-bezier(.3,1.6,.5,1); }
+@keyframes tick { 50% { transform: scale(1.35); } }
+.label { transition: color .2s; }
+.btn { transition: transform .25s cubic-bezier(.2,.7,.2,1), background-color .2s, box-shadow .25s, opacity .2s; }
+.btn:active { transform: scale(.96); }
+@media (prefers-reduced-motion: reduce) { .modal-in, .modal-out, .card-out, .modal-bar { animation: none !important; } }
+
+.modal-nudge { animation: nudge .45s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes nudge { 15%, 85% { transform: translateX(-4px) scale(1.01); } 30%, 70% { transform: translateX(7px) scale(1.01); } 50% { transform: translateX(-7px) scale(1.01); } }
+
+/* ---------- admin pages ---------- */
+.ncard.dash-card { padding: 0; }
+.dash-card.ncard:hover { transform: translateY(-5px); }
+.pro-toast { animation: toastIn .5s cubic-bezier(.2,.9,.3,1.2) both !important; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(40px) scale(.9); } to { opacity: 1; transform: none; } }

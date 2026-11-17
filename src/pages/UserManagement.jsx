@@ -5,6 +5,9 @@ import { KeyRound, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import api, { errMsg } from '../services/api';
 import Spinner from '../components/Spinner';
 import { fmtDate } from '../components/NoticeCard';
+import BaseModal from '../components/Modal';
+import PageBanner from '../components/PageBanner';
+import { useConfirm } from '../components/Confirm';
 import { useAuth } from '../context/AuthContext';
 
 const pwRules = { required: 'Enter a password', minLength: { value: 8, message: 'Use at least 8 characters' }, validate: (v) => (/[A-Za-z]/.test(v) && /\d/.test(v)) || 'Include a letter and a number' };
@@ -23,15 +26,17 @@ export default function UserManagement() {
   useEffect(() => { const t = setTimeout(load, 250); return () => clearTimeout(t); }, [load]);
 
   const toggle = async (u) => { try { await api.patch(`/users/${u._id}/active`, { isActive: !u.isActive }); toast.success(u.isActive ? 'Account disabled' : 'Account enabled'); load(); } catch (e) { toast.error(errMsg(e)); } };
-  const remove = async (u) => { if (!confirm(`Delete ${u.name}? This cannot be undone.`)) return; try { await api.delete(`/users/${u._id}`); toast.success('User deleted'); load(); } catch (e) { toast.error(errMsg(e)); } };
+  const remove = async (u) => { if (!(await confirm({ title: 'Delete this admin?', message: `${u.name} will lose access and the account cannot be restored.`, confirmText: 'Yes, delete', tone: 'danger' }))) return; try { await api.delete(`/users/${u._id}`); toast.success('User deleted'); load(); } catch (e) { toast.error(errMsg(e)); } };
+  const confirm = useConfirm();
   const done = () => { setModal(null); load(); };
 
   return (
     <div>
+      <PageBanner eyebrow="Access" title="Admin accounts" text="Everyone listed here can sign in and manage the whole website." stats={[['Accounts', rows.length], ['Active', rows.filter((r) => r.isActive).length], ['Disabled', rows.filter((r) => !r.isActive).length]]}>
+        <button className="btn bg-white px-5 py-2.5 text-navy-800 shadow-lg btn-shine hover:-translate-y-0.5 hover:bg-sun-400" onClick={() => setModal({ type: 'add' })}><Plus className="h-4 w-4" /> Add admin</button>
+      </PageBanner>
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <h1 className="mr-auto text-2xl font-bold">Admin accounts</h1>
-        <div className="relative"><Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" /><input aria-label="Search users" placeholder="Search name or email" className="input pl-8" value={search} onChange={(e) => { setPage(1); setSearch(e.target.value); }} /></div>
-        <button className="btn-primary" onClick={() => setModal({ type: 'add' })}><Plus className="h-4 w-4" /> Add admin</button>
+        <div className="relative ml-auto"><Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" /><input aria-label="Search users" placeholder="Search name or email" className="input pl-8" value={search} onChange={(e) => { setPage(1); setSearch(e.target.value); }} /></div>
       </div>
       <div className="card overflow-x-auto p-0">
         {loading ? <Spinner /> : rows.length === 0 ? <p className="p-8 text-center text-sm text-slate-500">No admin accounts match.</p> : (
@@ -61,12 +66,9 @@ export default function UserManagement() {
 
 function Modal({ title, onClose, children, onSubmit }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4" role="dialog" aria-modal="true" aria-label={title}>
-      <form onSubmit={onSubmit} className="card w-full max-w-md space-y-4" noValidate>
-        <div className="flex items-center justify-between"><h2 className="text-lg font-semibold">{title}</h2><button type="button" className="btn-ghost" aria-label="Close" onClick={onClose}><X className="h-4 w-4" /></button></div>
-        {children}
-      </form>
-    </div>
+    <BaseModal title={title} onClose={onClose} size="md">
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>{children}</form>
+    </BaseModal>
   );
 }
 

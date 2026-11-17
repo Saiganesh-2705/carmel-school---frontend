@@ -4,22 +4,26 @@ import { Mail, Phone, Trash2 } from 'lucide-react';
 import api, { errMsg } from '../services/api';
 import Spinner from '../components/Spinner';
 import { fmtDate } from '../components/NoticeCard';
+import PageBanner from '../components/PageBanner';
+import { useConfirm } from '../components/Confirm';
 
 const TABS = [['', 'All'], ['new', 'New'], ['read', 'Read'], ['replied', 'Replied']];
 const BADGE = { new: 'bg-sun-400/25 text-amber-700', read: 'bg-slate-200 text-slate-600', replied: 'bg-teal-500/15 text-teal-600' };
 
 export default function Messages() {
   const [rows, setRows] = useState([]); const [status, setStatus] = useState(''); const [loading, setLoading] = useState(true);
+  const confirm = useConfirm();
   const load = useCallback(async () => {
     setLoading(true);
     try { const { data } = await api.get('/contact', { params: { status: status || undefined, limit: 50 } }); setRows(data.data); } catch (e) { toast.error(errMsg(e)); } finally { setLoading(false); }
   }, [status]);
   useEffect(() => { load(); }, [load]);
   const mark = async (m, s) => { try { await api.patch(`/contact/${m._id}/status`, { status: s }); load(); } catch (e) { toast.error(errMsg(e)); } };
-  const remove = async (m) => { if (!confirm(`Delete the message from ${m.name}?`)) return; try { await api.delete(`/contact/${m._id}`); toast.success('Message deleted'); load(); } catch (e) { toast.error(errMsg(e)); } };
+  const remove = async (m) => { if (!(await confirm({ title: 'Delete this enquiry?', message: `The message from ${m.name} will be removed for good.`, confirmText: 'Yes, delete', tone: 'danger' }))) return; try { await api.delete(`/contact/${m._id}`); toast.success('Message deleted'); load(); } catch (e) { toast.error(errMsg(e)); } };
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="mb-4 flex flex-wrap items-center gap-3"><h1 className="mr-auto text-2xl font-bold">Enquiries</h1>
+      <PageBanner eyebrow="Enquiries" title="Messages from parents" text="Admission and general questions sent from the Contact page." stats={[['Shown now', rows.length], ['New', rows.filter((r) => r.status === 'new').length], ['Read', rows.filter((r) => r.status === 'read').length], ['Replied', rows.filter((r) => r.status === 'replied').length]]} />
+      <div className="mb-4 flex flex-wrap items-center gap-3">
         <div className="flex gap-1" role="tablist" aria-label="Filter by status">{TABS.map(([v, l]) => <button key={l} role="tab" aria-selected={status === v} className={`btn ${status === v ? 'bg-royal-500 text-white' : 'btn-ghost'}`} onClick={() => setStatus(v)}>{l}</button>)}</div>
       </div>
       {loading ? <Spinner /> : rows.length === 0 ? <p className="card text-center text-sm text-slate-500">No messages here. Enquiries from the Contact page appear in this list.</p> : (
