@@ -5,7 +5,9 @@ import Reveal from '../components/Reveal';
 import LazyImg from '../components/LazyImg';
 import Lightbox from '../components/Lightbox';
 import AlbumGrid from '../components/AlbumGrid';
-import { gallery, img } from '../config/school';
+import { gallery, events, img } from '../config/school';
+import { StatsStrip, QuoteBand, Journey, Faq, CtaBand } from '../components/Sections';
+import { Camera, Images, PartyPopper, Star, Sparkles } from 'lucide-react';
 
 const cats = ['All', ...new Set(gallery.map((g) => g.cat))];
 const counts = Object.fromEntries(cats.map((c) => [c, c === 'All' ? gallery.length : gallery.filter((g) => g.cat === c).length]));
@@ -15,7 +17,8 @@ export default function Gallery() {
   const items = useMemo(() => gallery.filter((g) => cat === 'All' || g.cat === cat), [cat]);
   return (
     <>
-      <PageHero eyebrow="Photo gallery" title="Moments from around the school" text={`${gallery.length} photos from celebrations, classrooms, the stage and the field.`} image="annual-day-hoop-dance.jpg" />
+      <PageHero eyebrow="Photo gallery" title="Moments from around the school" text={`${gallery.length} photos from celebrations, classrooms, the stage and the field.`} image="annual-day-hoop-dance.jpg" chips={[[Images, `${gallery.length} photos`], [Camera, 'Albums by event'], [Sparkles, 'Newest first']]} />
+      <StatsStrip items={[{ n: gallery.length, suffix: '+', label: 'Photos', icon: Images }, { n: events.length, suffix: '+', label: 'Celebrations', icon: PartyPopper }, { text: 'Newest first', label: 'Albums', icon: Camera }, { text: 'Growing', label: 'New photos added', icon: Star }]} />
       <AlbumGrid heading="Photo albums" text="One album for each celebration. Tap an album to open all of its photos." filters />
       <div className="mx-auto max-w-6xl px-4 py-12">
         <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0" role="group" aria-label="Filter photos">
@@ -36,6 +39,8 @@ export default function Gallery() {
         </ul>
       </div>
       {idx !== null && <Lightbox items={items} index={idx} onChange={setIdx} onClose={() => setIdx(null)} />}
+      <QuoteBand image="annual-day-bharatanatyam.jpg" quote="Moments that make a childhood." by="Carmel International School" />
+      <CtaBand title="Want your child to be in the next photo?" text="Ask the school office about admissions." />
     </>
   );
 }

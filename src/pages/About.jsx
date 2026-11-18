@@ -5,6 +5,9 @@ import Reveal from '../components/Reveal';
 import LazyImg from '../components/LazyImg';
 import Tilt from '../components/Tilt';
 import { school, img } from '../config/school';
+import { StatsStrip, QuoteBand, Journey, Faq, CtaBand, Highlights, PhotoStrip, ExpandPanels } from '../components/Sections';
+import { ShieldCheck, Languages, Palette, Sunrise, Pencil, Music, Trophy, Users, GraduationCap, Star, Calendar } from 'lucide-react';
+import { programmes as progs, events as evs, gallery as gal } from '../config/school';
 
 const values = [
   { icon: Heart, t: 'Kindness', d: 'Children learn to care for friends, teachers and the people around them.' },
@@ -16,7 +19,8 @@ const values = [
 export default function About() {
   return (
     <>
-      <PageHero eyebrow={school.motto} title={`About ${school.name}`} text="A CBSE school where every child is known, cared for and encouraged to lead." image="campus-gate.jpg" />
+      <PageHero eyebrow={school.motto} title={`About ${school.name}`} text="A CBSE school where every child is known, cared for and encouraged to lead." image="campus-gate.jpg" chips={[[GraduationCap, 'CBSE school'], [Heart, 'Learn to Lead'], [Users, 'JKG to Grade V']]} />
+      <StatsStrip items={[{ text: school.board, label: 'Board', icon: GraduationCap }, { n: progs.length, label: 'Class levels', icon: Users }, { n: evs.length, suffix: '+', label: 'Celebrations a year', icon: Calendar }, { n: gal.length, suffix: '+', label: 'Photos shared', icon: Star }]} />
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-[1.2fr_1fr]">
         <div className="space-y-5 text-lg leading-relaxed text-slate-700">
           <Reveal><p>{school.name} is a {school.board} school. Our motto, “{school.motto}”, is on our crest and in our classrooms: we want every child to grow into someone who can think, speak up and help others.</p></Reveal>
@@ -60,6 +64,26 @@ export default function About() {
         </div>
         <Reveal className="mt-12 text-center"><Link to="/gallery" className="btn-primary btn-shine px-6 py-3">See more in the gallery <ArrowRight className="h-4 w-4" /></Link></Reveal>
       </section>
+      <Highlights eyebrow="Why families choose Carmel" title="A caring school with a strong foundation" text="Small things done well every day: that is what children and parents notice first." items={[
+        { icon: ShieldCheck, t: 'A safe, caring campus', d: 'Sisters and teachers know every child by name and watch over them throughout the day.' },
+        { icon: BookOpen, t: 'CBSE curriculum', d: 'A clear, well-paced path from JKG to Grade V that prepares children for higher classes.' },
+        { icon: Palette, t: 'Arts and celebration', d: 'Colour days, Annual Day and cultural events give every child a stage.' },
+        { icon: Trophy, t: 'Sport and teamwork', d: 'Races, relays and games build fitness, fair play and friendship.' },
+        { icon: Languages, t: 'Confident speakers', d: 'Songs, recitations and assemblies help children speak with confidence.' },
+        { icon: Heart, t: 'Faith and values', d: 'Prayer, kindness and respect are practised together every morning.' }]} />
+      <ExpandPanels eyebrow="Our approach" title="Learn. Play. Celebrate. Lead." text="Four ideas that shape every school day. Hover or tap a photo to open it." items={[
+        { img: 'study-outdoors.jpg', title: 'Learn', text: 'Reading, writing and numbers taught with patience, activities and plenty of encouragement.' },
+        { img: 'sports-race.jpg', title: 'Play', text: 'Open-air games and races teach teamwork, fitness and fair play.' },
+        { img: 'blue-day.jpg', title: 'Celebrate', text: 'Colour days, festivals and Annual Day give every child a reason to shine.' },
+        { img: 'independence-day-song.jpg', title: 'Lead', text: 'Children speak, sing and take charge on stage, building confidence for life.' }]} />
+      <PhotoStrip title="Life at Carmel" text="A few moments from classrooms, the stage and the field." photos={['music-class.jpg', 'sports-race.jpg', 'green-day.jpg', 'science-exhibition.jpg', 'bharatanatyam.jpg', 'morning-prayer.jpg']} />
+      <Journey eyebrow="A day at Carmel" title="From morning prayer to home time" text="Every day follows a gentle rhythm that keeps children happy and learning." steps={[
+        { icon: Sunrise, t: 'Morning prayer', d: 'The day begins with prayer and a thought for the day, together.' },
+        { icon: Pencil, t: 'Classroom learning', d: 'Reading, writing, numbers and activities in small, caring groups.' },
+        { icon: Music, t: 'Music, art and dance', d: 'Songs, crafts and stage practice that build confidence.' },
+        { icon: Trophy, t: 'Sport and play', d: 'Games and races in the open air, with teachers always watching.' }]} />
+      <QuoteBand image="annual-day-hoop-dance.jpg" quote={`“${school.motto}”`} by={school.name} />
+      <CtaBand title="Want to know more about Carmel?" text="Visit the campus, meet the teachers and see the classrooms for yourself." label="Contact the office" />
     </>
   );
 }

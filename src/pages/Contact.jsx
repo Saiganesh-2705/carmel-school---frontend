@@ -6,6 +6,8 @@ import PageHero from '../components/PageHero';
 import Reveal from '../components/Reveal';
 import api, { errMsg } from '../services/api';
 import { school } from '../config/school';
+import { StatsStrip, QuoteBand, Journey, Faq, CtaBand, AgeFinder } from '../components/Sections';
+
 
 const topics = [['admission', 'Admission'], ['general', 'General question'], ['other', 'Something else']];
 const next = [[MessageSquare, 'You send a message', 'Tell us your child’s age and what you would like to know.'], [PhoneCall, 'The office replies', 'We share the admission process and fees.'], [School, 'You visit the campus', 'Meet the teachers and see the classrooms.']];
@@ -26,7 +28,8 @@ export default function Contact() {
   const info = [[MapPin, 'Visit us', school.address, school.address && `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${school.name}, ${school.address}`)}`], [Phone, 'Call us', school.phone, school.phone && `tel:${school.phone}`], [Mail, 'Email us', school.email, school.email && `mailto:${school.email}`], [Clock, 'Office hours', school.hours]].filter(([, , t]) => t);
   return (
     <>
-      <PageHero eyebrow="Get in touch" title="Contact us" text="Questions about admission, classes or a campus visit? Send us a message and the school office will reply." image="blue-day.jpg" />
+      <PageHero eyebrow="Get in touch" title="Contact us" text="Questions about admission, classes or a campus visit? Send us a message and the school office will reply." image="blue-day.jpg" chips={[[MessageSquare, 'Quick reply'], [MapPin, 'Campus visits welcome'], [Clock, 'School office']]} />
+
       <div className="mx-auto -mt-16 grid max-w-6xl gap-8 px-4 pb-20 md:grid-cols-5">
         <Reveal dir="up" className="relative z-10 md:col-span-3">
           <div className="relative overflow-hidden rounded-3xl bg-white p-6 shadow-2xl shadow-navy-900/10 ring-1 ring-slate-200 sm:p-9">
@@ -61,6 +64,12 @@ export default function Contact() {
             <ol className="mt-4 space-y-4">{next.map(([Icon, t, d], n) => <li key={t} className="flex gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-sun-400"><Icon className="h-4 w-4" /></span><div><p className="text-sm font-semibold">{n + 1}. {t}</p><p className="text-sm text-slate-300">{d}</p></div></li>)}</ol></div>
         </Reveal>
       </div>
+      <AgeFinder />
+      <Faq title="Before you write to us" items={[
+        { q: 'How soon will the office reply?', a: 'The school office reads every enquiry and replies as soon as it can.' },
+        { q: 'What should I include in my message?', a: 'Your child’s name and age, the class you are interested in, and the best way to reach you.' },
+        { q: 'Can I visit before applying?', a: 'Yes. Ask for a campus visit in your message and the office will fix a time.' },
+        { q: 'Where is the school?', a: school.address + '.' }]} />
     </>
   );
 }

@@ -5,6 +5,9 @@ import Reveal from '../components/Reveal';
 import Tilt from '../components/Tilt';
 import LazyImg from '../components/LazyImg';
 import { programmes, img, school } from '../config/school';
+import { StatsStrip, QuoteBand, Journey, Faq, CtaBand, Highlights, PhotoStrip, AgeFinder } from '../components/Sections';
+import { Heart, Music, ShieldCheck, Users, BookOpen, Star, Backpack, Lightbulb, Rocket } from 'lucide-react';
+import { events as evs } from '../config/school';
 
 const icons = [Shapes, BookOpenText, Pencil, Calculator, Microscope, Trophy];
 const tones = ['from-sun-500 to-orange-400', 'from-teal-500 to-emerald-400', 'from-royal-500 to-sky-400', 'from-fuchsia-500 to-rose-400', 'from-violet-500 to-indigo-400', 'from-navy-700 to-royal-500'];
@@ -12,7 +15,8 @@ const tones = ['from-sun-500 to-orange-400', 'from-teal-500 to-emerald-400', 'fr
 export default function Classes() {
   return (
     <>
-      <PageHero eyebrow="Our classes" title="From JKG to Grade V" text={`A clear path for young learners at ${school.name}: a joyful start in Pre-Primary, then growing confidence through the early primary grades.`} image="students-pink-uniform.jpg" />
+      <PageHero eyebrow="Our classes" title="From JKG to Grade V" text={`A clear path for young learners at ${school.name}: a joyful start in Pre-Primary, then growing confidence through the early primary grades.`} image="students-pink-uniform.jpg" chips={[[GraduationCap, 'CBSE'], [Users, 'JKG to Grade V'], [Heart, 'Caring teachers']]} />
+      <StatsStrip items={[{ text: 'CBSE', label: 'Board', icon: GraduationCap }, { n: programmes.length, label: 'Class levels', icon: Users }, { text: 'JKG–V', label: 'Age range', icon: BookOpen }, { n: evs.length, suffix: '+', label: 'Celebrations a year', icon: Star }]} />
 
       <section className="mx-auto max-w-6xl px-4 py-16" aria-label="Learning path">
         <Reveal className="text-center"><span className="eyebrow">Learning path</span><h2 className="mt-2 text-3xl text-navy-800 sm:text-4xl">Step by step, year by year</h2></Reveal>
@@ -54,6 +58,26 @@ export default function Classes() {
           })}
         </div>
       </div>
+      <AgeFinder />
+      <Highlights eyebrow="Beyond the textbook" title="What every class enjoys" text="Learning here is active: children make, sing, play and present." items={[
+        { icon: Pencil, t: 'Learning by making', d: 'Paper, cups and newspaper become flowers, toys and models.' },
+        { icon: Music, t: 'Music and dance', d: 'Songs, rhymes and stage practice in every grade.' },
+        { icon: Trophy, t: 'Sport and games', d: 'Open-air games and races with teachers always close by.' },
+        { icon: Microscope, t: 'Science and curiosity', d: 'Simple models and exhibitions that bring lessons to life.' },
+        { icon: ShieldCheck, t: 'Safe, small groups', d: 'Teachers give each child attention and encouragement.' },
+        { icon: Heart, t: 'Good manners', d: 'Respect and kindness are practised every day.' }]} />
+      <PhotoStrip eyebrow="In the classroom" title="Our young learners" photos={['students-pink-uniform.jpg', 'summer-class-crafts.jpg', 'study-outdoors.jpg', 'table-manners.jpg', 'music-class.jpg', 'science-exhibition.jpg']} />
+      <Journey eyebrow="The learning journey" title="How a child grows with us" text="Each stage builds on the last, so children move forward with confidence." steps={[
+        { icon: Backpack, t: 'JKG & SKG', d: 'Play, rhymes, colours and the first letters and numbers.' },
+        { icon: BookOpen, t: 'Grades I and II', d: 'Reading, writing and early mathematics through activities.' },
+        { icon: Lightbulb, t: 'Grades III and IV', d: 'Longer reading, problem solving and projects.' },
+        { icon: Rocket, t: 'Grade V', d: 'Senior-most children lead assemblies, events and projects.' }]} />
+      <Faq items={[
+        { q: 'Which board does the school follow?', a: 'Carmel International School is a CBSE school.' },
+        { q: 'Which classes are available?', a: 'JKG and SKG in Pre-Primary, and Grades I to V in Primary.' },
+        { q: 'How do I ask about admission?', a: 'Send an enquiry from the Contact page. The school office replies with the process and fixes a time that suits you.' },
+        { q: 'Can I visit the campus?', a: 'Yes. Mention it in your enquiry and the office will arrange a visit.' }]} />
+      <CtaBand title="Ready to join the Carmel family?" text="Tell us your child’s age and the class you are interested in." />
     </>
   );
 }

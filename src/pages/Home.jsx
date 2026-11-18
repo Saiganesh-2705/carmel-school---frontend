@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, Palette, Sparkles, Trophy, HeartHandshake, ArrowRight, MessageSquare, PhoneCall, School, Star, Users, Images, PartyPopper, ShieldCheck } from 'lucide-react';
+import { ChevronDown, Palette, Sparkles, Trophy, HeartHandshake, ArrowRight, MessageSquare, PhoneCall, School, Star, Users, Images, PartyPopper, ShieldCheck, BookOpen, Music, ChevronLeft, ChevronRight } from 'lucide-react';
 import Reveal from '../components/Reveal';
 import LazyImg from '../components/LazyImg';
 import Tilt from '../components/Tilt';
 import Counter from '../components/Counter';
 import Carousel from '../components/Carousel';
 import Lightbox from '../components/Lightbox';
+import AlbumGrid from '../components/AlbumGrid';
+import { AgeFinder } from '../components/Sections';
 import { SlideLayers, SlideDots, useSlides } from '../components/HeroSlides';
 import { school, img, heroSlides, events, annualDay, community, gallery, programmes } from '../config/school';
 
@@ -46,16 +48,24 @@ function Hero() {
 }
 
 function Marquee() {
-  const strip = [...events, ...events];
+  const row = useRef(null);
+  const go = (d) => row.current?.scrollBy({ left: d * 320, behavior: 'smooth' });
   return (
-    <section id="celebrate" className="overflow-hidden py-14" aria-label="School celebrations">
-      <Reveal dir="blur" className="mx-auto mb-8 max-w-6xl px-4"><span className="eyebrow">Celebrations</span><h2 className="mt-2 text-3xl font-bold text-navy-800 sm:text-4xl">Every month has something to celebrate</h2><p className="mt-2 max-w-2xl text-slate-600">Colour days, festivals and ceremonies fill the school year. Hover to pause the strip.</p></Reveal>
-      <div className="flex w-max animate-marquee gap-4 hover:[animation-play-state:paused]">
-        {strip.map((e, n) => (
-          <Link to="/events" key={n} tabIndex={n >= events.length ? -1 : 0} aria-hidden={n >= events.length} className="group relative block h-64 w-72 shrink-0 overflow-hidden rounded-2xl">
+    <section id="celebrate" className="py-14" aria-label="School celebrations">
+      <div className="mx-auto mb-8 flex max-w-6xl items-end justify-between gap-4 px-4">
+        <Reveal dir="blur"><span className="eyebrow">Celebrations</span><h2 className="mt-2 text-3xl font-bold text-navy-800 sm:text-4xl">Every month has something to celebrate</h2><p className="mt-2 max-w-2xl text-slate-600">Colour days, festivals and ceremonies fill the school year.</p></Reveal>
+        <div className="hidden gap-2 sm:flex">
+          <button onClick={() => go(-1)} aria-label="Previous" className="rounded-full bg-white p-3 text-navy-800 shadow ring-1 ring-slate-200 transition hover:-translate-x-0.5 hover:bg-navy-800 hover:text-white"><ChevronLeft className="h-5 w-5" /></button>
+          <button onClick={() => go(1)} aria-label="Next" className="rounded-full bg-white p-3 text-navy-800 shadow ring-1 ring-slate-200 transition hover:translate-x-0.5 hover:bg-navy-800 hover:text-white"><ChevronRight className="h-5 w-5" /></button>
+        </div>
+      </div>
+      <div ref={row} className="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4 pb-2 sm:px-[max(1rem,calc((100vw-72rem)/2+1rem))]">
+        {events.map((e, n) => (
+          <Link to="/events" key={e.title} className="group relative block h-72 w-64 shrink-0 snap-start overflow-hidden rounded-2xl shadow-md ring-1 ring-black/5 transition duration-500 hover:-translate-y-2 hover:shadow-2xl sm:w-72">
             <img src={img(e.img)} alt="" loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
-            <div className="absolute inset-0 bg-gradient-to-t from-navy-900/80 via-transparent to-transparent" />
-            <span className="absolute bottom-3 left-4 font-semibold text-white">{e.title}</span>
+            <div className="absolute inset-0 bg-gradient-to-t from-navy-900/70 via-transparent to-transparent" />
+            <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-bold text-navy-800">{String(n + 1).padStart(2, '0')}</span>
+            <span className="absolute inset-x-0 bottom-0 p-4"><span className="block font-semibold text-white">{e.title}</span><span className="mt-1 inline-flex items-center gap-1 text-xs text-white/85 transition-all group-hover:gap-2">View <ArrowRight className="h-3.5 w-3.5" /></span></span>
           </Link>))}
       </div>
     </section>
@@ -89,15 +99,31 @@ function Bento() {
   );
 }
 
+const pillars = [
+  { i: BookOpen, t: 'Sound academics', d: 'CBSE curriculum from JKG to Grade V with caring, steady teaching.', c: 'from-royal-500 to-sky-400' },
+  { i: HeartHandshake, t: 'Faith and values', d: 'Prayer, kindness and good manners are part of every school day.', c: 'from-rose-500 to-orange-400' },
+  { i: Music, t: 'Arts and culture', d: 'Dance, music and stage programmes that build confidence.', c: 'from-fuchsia-500 to-violet-500' },
+  { i: Trophy, t: 'Sport and play', d: 'Races, relays and games that teach teamwork and fair play.', c: 'from-teal-500 to-emerald-400' },
+];
 function Band() {
-  const words = ['Learn to Lead', 'Faith', 'Play', 'Music', 'Sport', 'Kindness', 'Celebration'];
-  const row = [...words, ...words, ...words, ...words];
   return (
-    <div className="overflow-hidden border-y border-slate-200 bg-white py-5" aria-hidden="true">
-      <div className="flex w-max animate-drift gap-10 whitespace-nowrap font-display text-5xl font-bold sm:text-6xl">
-        {row.map((w, n) => <span key={n} className={`flex items-center gap-10 ${n % 2 ? 'outline-text' : 'text-navy-800'}`}>{w}<Star className="h-6 w-6 fill-sun-400 text-sun-400" /></span>)}
+    <section className="relative border-y border-slate-200 bg-white py-14" aria-label="What we stand for">
+      <div className="mx-auto max-w-6xl px-4">
+        <Reveal dir="blur" className="mx-auto max-w-2xl text-center"><span className="eyebrow justify-center">What we stand for</span><h2 className="mt-2 text-3xl font-bold text-navy-800 sm:text-4xl">Four pillars of a Carmel childhood</h2></Reveal>
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {pillars.map(({ i: Icon, t, d, c }, n) => (
+            <Reveal key={t} dir="zoom" delay={n * 90}>
+              <article className="group relative h-full overflow-hidden rounded-2xl bg-slate-50 p-6 ring-1 ring-slate-200 transition duration-500 hover:-translate-y-2 hover:bg-white hover:shadow-2xl">
+                <span className="absolute -right-2 -top-4 select-none font-display text-8xl font-bold text-slate-200/70 transition duration-500 group-hover:scale-110 group-hover:text-slate-200" aria-hidden="true">{String(n + 1).padStart(2, '0')}</span>
+                <span className={`relative inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${c} text-white shadow-lg transition duration-500 group-hover:rotate-6 group-hover:scale-110`}><Icon className="h-6 w-6" aria-hidden="true" /></span>
+                <h3 className="relative mt-5 text-lg font-bold text-navy-800">{t}</h3>
+                <p className="relative mt-2 text-sm leading-relaxed text-slate-600">{d}</p>
+                <span className={`absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-gradient-to-r ${c} transition duration-500 group-hover:scale-x-100`} />
+              </article>
+            </Reveal>))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -238,4 +264,4 @@ function Cta() {
   );
 }
 
-export default function Home() { return <><Hero /><Marquee /><Band /><Programmes /><Bento /><AnnualDaySpotlight /><Community /><Stats /><Why /><Steps /><Cta /></>; }
+export default function Home() { return <><Hero /><Marquee /><Band /><Programmes /><AlbumGrid heading="Latest from our campus" text="Fresh photo albums from recent celebrations and events." limit={4} link /><Bento /><AnnualDaySpotlight /><Community /><Stats /><Why /><AgeFinder /><Steps /><Cta /></>; }

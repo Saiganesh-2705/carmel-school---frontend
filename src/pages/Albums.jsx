@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Images, CalendarDays, Loader2, Send, Eye, EyeOff } from 'lucide-react';
+import { Plus, Pencil, Trash2, Images, ImagePlus, CalendarDays, Loader2, Send, Eye, EyeOff } from 'lucide-react';
 import api, { errMsg } from '../services/api';
 import Spinner from '../components/Spinner';
 import Modal from '../components/Modal';
@@ -53,17 +53,18 @@ export default function Albums() {
               </div>
               <div className="flex items-start gap-2 p-4">
                 <div className="min-w-0 flex-1"><h3 className="truncate font-semibold">{a.title}</h3><p className="mt-0.5 flex items-center gap-1.5 text-xs text-slate-500"><CalendarDays className="h-3.5 w-3.5" />{albumDate(a.eventDate)}{a.isPublished && <><span>·</span><Eye className="h-3.5 w-3.5" />Live</>}</p></div>
+                <button className="inline-flex items-center gap-1 rounded-lg bg-teal-500/10 px-2.5 py-1.5 text-xs font-semibold text-teal-700 transition hover:bg-teal-500/20" onClick={() => setEditing(a)}><ImagePlus className="h-3.5 w-3.5" />Add photos</button>
                 <button className="rounded-lg p-2 text-slate-500 transition duration-300 hover:rotate-12 hover:bg-royal-500/10 hover:text-royal-600" aria-label={`Edit ${a.title}`} onClick={() => setEditing(a)}><Pencil className="h-4 w-4" /></button>
                 <button className="rounded-lg p-2 text-slate-500 transition duration-300 hover:scale-110 hover:bg-red-50 hover:text-red-600" aria-label={`Delete ${a.title}`} onClick={() => remove(a)}><Trash2 className="h-4 w-4" /></button>
               </div>
             </div>))}
         </div></>)}
-      {editing && <AlbumForm initial={editing} onClose={() => setEditing(null)} onDone={() => { setEditing(null); load(); }} />}
+      {editing && <AlbumForm rows={rows} initial={editing} onClose={() => setEditing(null)} onDone={() => { setEditing(null); load(); }} />}
     </div>
   );
 }
 
-function AlbumForm({ initial, onClose, onDone }) {
+function AlbumForm({ rows, initial, onClose, onDone }) {
   const confirm = useConfirm(); const isEdit = !!initial._id; const [prog, setProg] = useState(null);
   const { register, handleSubmit, formState: { errors, isSubmitting, isDirty } } = useForm({ defaultValues: { title: initial.title || '', description: initial.description || '', category: initial.category || 'celebration', eventDate: dateInput(initial.eventDate), isPublished: initial.isPublished !== false } });
   const picker = usePhotoPicker(isEdit ? initial.photos.map((id) => ({ id, url: albumPhoto(initial, id, 300) })) : [], 500, 500);
@@ -76,12 +77,15 @@ function AlbumForm({ initial, onClose, onDone }) {
       const BATCH = 20; const files = picker.added.map((a) => a.file);
       const batches = []; for (let i = 0; i < files.length; i += BATCH) batches.push(files.slice(i, i + BATCH));
       const send = async (id, list, first) => {
-        const fd = new FormData(); Object.entries(fields).forEach(([k, x]) => fd.append(k, x));
+        const fd = new FormData(); if (!merge) Object.entries(fields).forEach(([k, x]) => fd.append(k, x));
         list.forEach((f) => fd.append('images', f));
         if (first && picker.removed.length) fd.append('removeImages', JSON.stringify(picker.removed));
         const r = id ? await api.put(`/albums/${id}`, fd) : await api.post('/albums', fd); return r.data.data._id;
       };
-      let id = initial._id;
+      let id = initial._id; let merge = false;
+      // Same celebration already on the site? Offer to add the new photos to it instead of making a duplicate card.
+      const twin = !isEdit && files.length ? rows.find((r) => r.title.trim().toLowerCase() === fields.title.toLowerCase()) : null;
+      if (twin && (await confirm({ title: `“${twin.title}” already exists`, message: `Add these ${files.length} photos to the existing album (${twin.photos.length} photos) instead of creating a second one?`, confirmText: 'Add to existing album', cancelText: 'Create separate album', tone: 'info' }))) { id = twin._id; merge = true; }
       if (!picker.changed) { await api.put(`/albums/${id}`, fields); }
       else if (!batches.length) { id = await send(id, [], true); }
       else {
@@ -90,7 +94,7 @@ function AlbumForm({ initial, onClose, onDone }) {
           for (let b = 0; b < batches.length; b++) { id = await send(id, batches[b], b === 0); done += batches[b].length; setProg({ done, total: files.length }); }
         } catch (e) { setProg(null); toast.error(`${done} of ${files.length} photos were saved before a problem happened: ${errMsg(e)} Open the album and add the rest.`, { duration: 9000 }); onDone(); return; }
       }
-      setProg(null); toast.success(isEdit ? 'Album updated' : 'Album published'); onDone();
+      setProg(null); toast.success(merge ? 'Photos added to the existing album' : isEdit ? 'Album updated' : 'Album published'); onDone();
     } catch (e) { toast.error(errMsg(e)); }
   };
   return (

@@ -7,14 +7,26 @@ import LazyImg from '../components/LazyImg';
 import Tilt from '../components/Tilt';
 import Lightbox from '../components/Lightbox';
 import AlbumGrid from '../components/AlbumGrid';
+import { ExpandPanels, Highlights } from '../components/Sections';
 import { events, img, annualDay } from '../config/school';
+import { StatsStrip, QuoteBand, Journey, Faq, CtaBand } from '../components/Sections';
+import { PartyPopper, Camera, Music, Star, Trophy, Sparkles } from 'lucide-react';
 
 export default function Events() {
   const [idx, setIdx] = useState(null);
   return (
     <>
-      <PageHero eyebrow="Through the school year" title="Celebrations and events" text="Colour days, festivals, sports and Annual Day: a look at what the year holds for our children." image="pongal-celebration.jpg" />
+      <PageHero eyebrow="Through the school year" title="Celebrations and events" text="Colour days, festivals, sports and Annual Day: a look at what the year holds for our children." image="pongal-celebration.jpg" chips={[[PartyPopper, 'Colour days'], [Trophy, 'Sports Day'], [Star, 'Annual Day'], [Sparkles, 'Festivals']]} />
+      <StatsStrip items={[{ n: events.length, suffix: '+', label: 'Celebrations a year', icon: PartyPopper }, { n: annualDay.length, label: 'Annual Day moments', icon: Music }, { text: 'Every year', label: 'Annual Day', icon: Star }, { text: 'New albums', label: 'Added by the school', icon: Camera }]} />
       <AlbumGrid heading="Latest celebrations" text="Photo albums from our recent days and events. Tap an album to see every photo." limit={6} link />
+      <ExpandPanels eyebrow="Celebration spotlight" title="A year full of colour" text="Hover or tap a celebration to see what it is all about." items={events.slice(0, 5).map((e) => ({ img: e.img, title: e.title, text: e.text }))} />
+      <Highlights eyebrow="Why we celebrate" title="More than a day off from class" text="Every celebration teaches something children carry with them." items={[
+        { icon: Star, t: 'Confidence', d: 'Children perform, speak and take part in front of friends and families.' },
+        { icon: PartyPopper, t: 'Joy and belonging', d: 'Shared days make the school feel like one big family.' },
+        { icon: Music, t: 'Culture and tradition', d: 'Festivals and performances connect children with their heritage.' },
+        { icon: Trophy, t: 'Teamwork', d: 'Group dances, relays and displays are made by working together.' },
+        { icon: Camera, t: 'Memories', d: 'Every event is photographed so families can look back on it.' },
+        { icon: Sparkles, t: 'Creativity', d: 'Costumes, crafts and decorations are made by the children themselves.' }]} />
       <div className="relative mx-auto max-w-5xl px-4 py-16">
         <div className="absolute inset-y-16 left-1/2 hidden w-px -translate-x-1/2 bg-gradient-to-b from-teal-500/0 via-teal-500/50 to-teal-500/0 md:block" aria-hidden="true" />
         <ol className="space-y-12">
@@ -56,6 +68,8 @@ export default function Events() {
         </div>
       </section>
       {idx !== null && <Lightbox items={annualDay} index={idx} onChange={setIdx} onClose={() => setIdx(null)} />}
+      <QuoteBand image="christmas.jpg" quote="Every celebration is a lesson in joy, kindness and teamwork." by="Celebrations at Carmel" />
+      <CtaBand title="See more of our school life" text="Browse the photo gallery for more moments from classrooms, stage and field." to="/gallery" label="Open the gallery" />
     </>
   );
 }
